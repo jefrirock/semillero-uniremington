@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Controller
 public class HomeController {
@@ -46,10 +47,30 @@ public class HomeController {
         return "formulario-docente";
     }
 
-    // Guardar docente
+    // Guardar docente con foto
     @PostMapping("/docentes/guardar")
-    public String guardarDocente(@ModelAttribute Docente docente) {
-        docenteService.guardar(docente);
+    public String guardarDocente(@ModelAttribute Docente docente,
+                                 @RequestParam("foto") MultipartFile foto) {
+        try {
+            // Crear carpeta uploads si no existe
+            String uploadDir = "uploads/";
+            java.io.File dir = new java.io.File(uploadDir);
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
+
+            // Guardar la foto si se subió
+            if (!foto.isEmpty()) {
+                String fileName = System.currentTimeMillis() + "_" + foto.getOriginalFilename();
+                java.nio.file.Path filePath = java.nio.file.Paths.get(uploadDir + fileName);
+                java.nio.file.Files.copy(foto.getInputStream(), filePath);
+                docente.setImagenUrl(fileName);
+            }
+
+            docenteService.guardar(docente);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return "redirect:/docentes";
     }
 

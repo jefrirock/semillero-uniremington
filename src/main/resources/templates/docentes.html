@@ -6,6 +6,45 @@
         <p>Nuestro Equipo de Profesores</p>
     </div>
 
+    <!-- Botones de acción (NUEVO) -->
+    <div style="text-align: center; margin-bottom: 30px;">
+        <a th:href="@{/docentes}" style="background: #003366; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; display: inline-block; margin: 5px; font-weight: bold;">
+            📋 Ver Docentes
+        </a>
+        <button onclick="mostrarLoginRegistro()" style="background: #ffd700; color: #003366; padding: 15px 30px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 1em; margin: 5px;">
+            ➕ Registrar Nuevo Docente
+        </button>
+    </div>
+
+    <!-- Login para registrar docente (NUEVO - inicialmente oculto) -->
+    <div id="loginRegistro" style="display: none; max-width: 400px; margin: 20px auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+        <h3 style="color: #003366; text-align: center; margin-bottom: 20px;">🔒 Acceso Restringido</h3>
+        <p style="text-align: center; color: #666; margin-bottom: 20px;">Ingrese credenciales para registrar docentes</p>
+
+        <div style="margin-bottom: 15px;">
+            <label style="display: block; color: #003366; font-weight: bold; margin-bottom: 5px;">Usuario:</label>
+            <input type="text" id="usuarioRegistro" style="width: 100%; padding: 10px; border: 2px solid #003366; border-radius: 5px;">
+        </div>
+
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; color: #003366; font-weight: bold; margin-bottom: 5px;">Contraseña:</label>
+            <input type="password" id="passwordRegistro" style="width: 100%; padding: 10px; border: 2px solid #003366; border-radius: 5px;">
+        </div>
+
+        <div style="display: flex; gap: 10px;">
+            <button onclick="verificarAccesoRegistro()" style="flex: 1; background: #003366; color: white; padding: 12px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">
+                Ingresar
+            </button>
+            <button onclick="cancelarLogin()" style="flex: 1; background: #666; color: white; padding: 12px; border: none; border-radius: 5px; cursor: pointer;">
+                Cancelar
+            </button>
+        </div>
+
+        <p id="errorLogin" style="color: red; text-align: center; margin-top: 15px; display: none;">
+            ❌ Usuario o contraseña incorrectos
+        </p>
+    </div>
+
     <!-- Buscador -->
     <div style="margin-bottom: 20px; text-align: center;">
         <form th:action="@{/docentes}" method="get" style="display: inline-flex; gap: 10px;">
@@ -17,84 +56,64 @@
         </form>
     </div>
 
-    <!-- Grid de Profesores (Estilo original) -->
+    <!-- Grid de Profesores -->
     <div class="profesores-grid">
         <div class="profesor-card" th:each="docente : ${docentes}">
             <div class="profesor-imagen">
-                <img th:if="${docente.imagenUrl}" th:src="@{'/images/' + ${docente.imagenUrl}}" alt="Profesor">
-                <div th:unless="${docente.imagenUrl}" style="width: 100%; height: 200px; background: #ddd; display: flex; align-items: center; justify-content: center; font-size: 3em;">👤</div>
+                <img th:if="${docente.imagenUrl}" th:src="@{'/uploads/' + ${docente.imagenUrl}}" alt="Profesor">
+                <div th:unless="${docente.imagenUrl}" class="placeholder">👤</div>
             </div>
-            <div style="padding: 15px;">
-                <h3 th:text="${docente.nombre}" style="color: #003366; font-size: 1.2em; margin-bottom: 10px;">Nombre</h3>
-                <p style="color: #555; font-size: 0.9em; margin-bottom: 5px;">
-                    <strong>Docente:</strong> <span th:text="${docente.area}">Área</span>
-                </p>
-                <p style="color: #555; font-size: 0.9em; margin-bottom: 10px;">
-                    <strong>Área:</strong> <span th:text="${docente.especialidad}">Especialidad</span>
-                </p>
-                <div style="background: #f9f9f9; padding: 10px; border-radius: 5px; margin-top: 10px; font-size: 0.85em; color: #666;">
-                    <p style="margin: 5px 0;"><strong>Experiencia:</strong> <span th:text="${docente.experienciaAnios}">0</span> años</p>
-                    <p style="margin: 5px 0;"><strong>Email:</strong> <span th:text="${docente.email}">email</span></p>
-                    <p style="margin: 5px 0;"><strong>Teléfono:</strong> <span th:text="${docente.telefono}">tel</span></p>
+            <div class="profesor-info">
+                <h3 th:text="${docente.nombre}">Nombre Docente</h3>
+                <p class="area" th:text="${docente.area}">Área</p>
+                <p class="especialidad" th:text="${docente.especialidad}">Especialidad</p>
+
+                <div class="detalle">
+                    <p><strong>📧</strong> <span th:text="${docente.email}">email</span></p>
+                    <p><strong>📱</strong> <span th:text="${docente.telefono}">tel</span></p>
                 </div>
+
+                <span class="badge-exp" th:text="${docente.experienciaAnios} + ' años'">Exp</span>
             </div>
         </div>
     </div>
 
     <div th:if="${#lists.isEmpty(docentes)}" style="text-align: center; padding: 40px; color: #666;">
         <p>No se encontraron docentes.</p>
-        <a th:href="@{/docentes/nuevo}" style="color: #003366; text-decoration: underline;">Registrar el primero</a>
-    </div>
-
-    <!-- Zona Hot (Como en tu original) -->
-    <div style="text-align: center; margin-top: 40px; border-top: 3px solid #003366; padding-top: 30px;">
-        <h3 style="color: #003366; margin-bottom: 20px;">📅 Zona de Información Adicional</h3>
-        <button class="zona-hot-btn" onclick="mostrarFormulario()" style="font-size: 14px; padding: 8px 20px;">📅 Mas Info 📅</button>
-
-        <!-- Formulario de acceso -->
-        <div id="zonaHotForm" class="zona-hot-form" style="display: none;">
-            <h3>Acceso Especial</h3>
-            <label>Usuario:</label>
-            <input type="text" id="user" placeholder="Usuario" style="width: 100%; padding: 8px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px;">
-
-            <label>Contraseña:</label>
-            <input type="password" id="password" placeholder="Contraseña" style="width: 100%; padding: 8px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px;">
-
-            <button onclick="verificarAcceso()" style="background: #28a745; color: white; padding: 10px; border: none; cursor: pointer; border-radius: 5px; width: 100%;">Ingresar</button>
-            <p id="errorMensaje" style="color: red; display: none; margin-top: 10px;">Usuario o contraseña incorrectos.</p>
-        </div>
-
-        <!-- Contenido oculto -->
-        <div id="zonaHotContent" class="zona-hot-content" style="display: none; max-width: 800px; margin: 20px auto;">
-            <h3>Galería de Actividades</h3>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-top: 20px;">
-                <div style="background: #f0f0f0; height: 150px; display: flex; align-items: center; justify-content: center; border-radius: 8px;">📷 Imagen 1</div>
-                <div style="background: #f0f0f0; height: 150px; display: flex; align-items: center; justify-content: center; border-radius: 8px;">📷 Imagen 2</div>
-                <div style="background: #f0f0f0; height: 150px; display: flex; align-items: center; justify-content: center; border-radius: 8px;">📷 Imagen 3</div>
-                <div style="background: #f0f0f0; height: 150px; display: flex; align-items: center; justify-content: center; border-radius: 8px;">📷 Imagen 4</div>
-            </div>
-        </div>
     </div>
 
     <script>
-        function mostrarFormulario() {
-            document.getElementById("zonaHotForm").style.display = "block";
-            document.getElementById("zonaHotContent").style.display = "none";
+        function mostrarLoginRegistro() {
+            document.getElementById('loginRegistro').style.display = 'block';
+            document.getElementById('errorLogin').style.display = 'none';
+            // Limpiar campos
+            document.getElementById('usuarioRegistro').value = '';
+            document.getElementById('passwordRegistro').value = '';
         }
 
-        function verificarAcceso() {
-            let usuario = document.getElementById("user").value;
-            let contraseña = document.getElementById("password").value;
-            let mensajeError = document.getElementById("errorMensaje");
+        function cancelarLogin() {
+            document.getElementById('loginRegistro').style.display = 'none';
+            document.getElementById('errorLogin').style.display = 'none';
+        }
 
-            if (usuario === "Admin" && contraseña === "1234") {
-                document.getElementById("zonaHotForm").style.display = "none";
-                document.getElementById("zonaHotContent").style.display = "block";
-                mensajeError.style.display = "none";
+        function verificarAccesoRegistro() {
+            const usuario = document.getElementById('usuarioRegistro').value;
+            const password = document.getElementById('passwordRegistro').value;
+
+            if (usuario === 'Admin' && password === '2026') {
+                // Redirigir al formulario de registro
+                window.location.href = '/docentes/nuevo';
             } else {
-                mensajeError.style.display = "block";
+                document.getElementById('errorLogin').style.display = 'block';
             }
         }
+
+        // Permitir enviar con Enter
+        document.getElementById('passwordRegistro').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                verificarAccesoRegistro();
+            }
+        });
     </script>
 </section>
 </html>

@@ -164,23 +164,113 @@
             color: #ff5733;
         }
 
-        /* Grid de docentes (Administrativa) */
+        /* Grid de docentes (Administrativa) - ESTILO MODERNO */
         .profesores-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 25px;
             margin-top: 20px;
+            padding: 0 10px;
         }
+
         .profesor-card {
             position: relative;
             overflow: hidden;
-            border-radius: 10px;
+            border-radius: 15px;
             background: white;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            border: 1px solid #e0e0e0;
+        }
+
+        .profesor-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 25px rgba(0, 51, 102, 0.15);
+        }
+
+        .profesor-imagen {
+            width: 100%;
+            height: 180px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .profesor-imagen img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: top center;
             transition: transform 0.3s ease;
         }
-        .profesor-card:hover {
-            transform: translateY(-5px);
+
+        .profesor-card:hover .profesor-imagen img {
+            transform: scale(1.05);
+        }
+
+        /* Placeholder cuando no hay imagen */
+        .profesor-imagen .placeholder {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #003366 0%, #004488 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3.5em;
+        }
+
+        /* Información del profesor */
+        .profesor-info {
+            padding: 15px;
+            text-align: center;
+            background: white;
+        }
+
+        .profesor-info h3 {
+            color: #003366;
+            font-size: 1em;
+            margin: 0 0 8px 0;
+            font-weight: 600;
+            line-height: 1.3;
+        }
+
+        .profesor-info .area {
+            color: #666;
+            font-size: 0.85em;
+            margin-bottom: 5px;
+        }
+
+        .profesor-info .especialidad {
+            color: #888;
+            font-size: 0.8em;
+            font-style: italic;
+            margin-bottom: 10px;
+        }
+
+        .profesor-info .detalle {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-size: 0.75em;
+            color: #555;
+            text-align: left;
+        }
+
+        .profesor-info .detalle p {
+            margin: 4px 0;
+        }
+
+        .profesor-info .badge-exp {
+            display: inline-block;
+            background: #ffd700;
+            color: #003366;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.75em;
+            font-weight: bold;
+            margin-top: 8px;
+        }
         }
         .profesor-imagen img {
             width: 100%;
