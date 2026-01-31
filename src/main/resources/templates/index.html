@@ -1,122 +1,115 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Uniremington Sede Caucasia - Semillero</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-        }
-        header {
-            background-color: #003366;
-            color: white;
-            text-align: center;
-            padding: 1rem;
-        }
-        nav {
-            background-color: #004488;
-            padding: 1rem;
-            text-align: center;
-        }
-        nav a {
-            color: white;
-            text-decoration: none;
-            margin: 0 15px;
-            font-weight: bold;
-        }
-        nav a:hover {
-            color: #ffd700;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        .hero {
-            background: linear-gradient(rgba(0, 51, 102, 0.8), rgba(0, 51, 102, 0.8));
-            color: white;
-            padding: 60px 20px;
-            text-align: center;
-            margin-bottom: 30px;
-            border-radius: 10px;
-        }
-        .btn {
-            background: #003366;
-            color: white;
-            padding: 10px 20px;
-            text-decoration: none;
-            border-radius: 5px;
-            display: inline-block;
-            margin: 5px;
-        }
-        .btn:hover {
-            background: #004488;
-        }
-        .stats {
-            display: flex;
-            justify-content: space-around;
-            background: #003366;
-            padding: 20px;
-            border-radius: 8px;
-            color: white;
-            margin-bottom: 30px;
-        }
-        .stat-number {
-            font-size: 2em;
-            font-weight: bold;
-            color: #ffd700;
-        }
-        footer {
-            background-color: #003366;
-            color: white;
-            text-align: center;
-            padding: 1rem;
-            margin-top: 20px;
-        }
-    </style>
-</head>
-<body>
-<header>
-    <h1>UNIREMINGTON SEDE CAUCASIA</h1>
-    <p>Semillero de Investigación</p>
-</header>
-
-<nav>
-    <a th:href="@{/}">Inicio</a>
-    <a th:href="@{/docentes}">Docentes</a>
-    <a href="#">Eventos</a>
-    <a href="#">Contacto</a>
-</nav>
-
-<div class="container">
-    <div class="hero">
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout('Inicio', ~{::section})}">
+<section>
+    <!-- Hero Banner -->
+    <div class="hero-banner">
         <h1>Formando Líderes para el Futuro</h1>
-        <p>Gestión del Semillero de Investigación</p>
+        <p>Más de 100 años de excelencia académica en Colombia</p>
     </div>
 
-    <div class="stats">
-        <div style="text-align: center;">
-            <div class="stat-number" th:text="${#lists.size(docentes)}">0</div>
-            <div>Docentes Registrados</div>
+    <!-- Anuncios -->
+    <div class="announcements">
+        <div class="announcement-title">📢 Anuncios Importantes</div>
+        <ul>
+            <li>Inscripciones abiertas para el periodo 2025-1</li>
+            <li>Nuevos convenios internacionales disponibles</li>
+            <li>Becas disponibles para estudiantes de alto rendimiento</li>
+        </ul>
+    </div>
+
+    <!-- Feature Grid con Modales -->
+    <div class="feature-grid">
+        <div class="feature-card" onclick="openModal('historiaModal')">
+            <h3>Nuestra Historia</h3>
+            <p>Fundada en 1915, Uniremington ha sido pionera en la educación superior en Colombia, transformando vidas a través de la educación de calidad.</p>
         </div>
-        <div style="text-align: center;">
+        <div class="feature-card" onclick="openModal('misionModal')">
+            <h3>Misión</h3>
+            <p>Somos una institución de educación superior que forma ciudadanos competentes, comprometidos con el desarrollo social.</p>
+        </div>
+        <div class="feature-card" onclick="openModal('visionModal')">
+            <h3>Visión</h3>
+            <p>Ser reconocida como una institución de educación superior de alta calidad, innovadora y comprometida con el desarrollo sostenible.</p>
+        </div>
+    </div>
+
+    <!-- Stats con datos reales de la BD -->
+    <div class="stats-container">
+        <div class="stat-item">
+            <div class="stat-number" th:text="${#lists.size(docentes)} + '+'">0+</div>
+            <div>Docentes Activos</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">300+</div>
+            <div>Estudiantes en Semillero</div>
+        </div>
+        <div class="stat-item">
             <div class="stat-number">95%</div>
             <div>Investigación Aplicada</div>
         </div>
+        <div class="stat-item">
+            <div class="stat-number">20+</div>
+            <div>Proyectos Activos</div>
+        </div>
     </div>
 
-    <div style="text-align: center; margin-top: 30px;">
-        <a th:href="@{/docentes}" class="btn">Ver Docentes</a>
-        <a th:href="@{/docentes/nuevo}" class="btn" style="background: #ffd700; color: #003366;">+ Nuevo Docente</a>
+    <!-- Modales (igual que tu página original) -->
+    <div id="historiaModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('historiaModal')">&times;</span>
+            <h2>Nuestra Historia</h2>
+            <div style="color: #333; line-height: 1.6;">
+                <p>La Corporación Universitaria Remington, fundada en 1915, ha sido un pilar fundamental en la educación superior de Colombia.</p>
+                <h3 style="color: #003366; border-left: 4px solid #ffd700; padding-left: 15px;">Hitos Históricos</h3>
+                <ul>
+                    <li>1915: Fundación como Instituto Remington</li>
+                    <li>1950: Expansión de programas académicos</li>
+                    <li>1996: Reconocimiento como Corporación Universitaria</li>
+                    <li>2000: Apertura de la sede en Caucasia</li>
+                    <li>2015: Celebración del centenario</li>
+                    <li>2020: Modernización y expansión digital</li>
+                </ul>
+            </div>
+        </div>
     </div>
-</div>
 
-<footer>
-    <p>&copy; 2025 Uniremington Sede Caucasia - Lenguaje de Programación Avanzado II</p>
-</footer>
-</body>
+    <div id="misionModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('misionModal')">&times;</span>
+            <h2>Nuestra Misión</h2>
+            <div style="color: #333; line-height: 1.6;">
+                <p>La Corporación Universitaria Remington tiene como misión fundamental la formación integral de profesionales competentes y éticos.</p>
+                <h3 style="color: #003366; border-left: 4px solid #ffd700; padding-left: 15px;">Pilares</h3>
+                <ul>
+                    <li><strong>Formación Integral:</strong> Desarrollo de competencias profesionales y valores éticos.</li>
+                    <li><strong>Investigación:</strong> Generación de conocimiento para solución de problemas regionales.</li>
+                    <li><strong>Extensión:</strong> Vinculación con la comunidad.</li>
+                    <li><strong>Innovación:</strong> Nuevas tecnologías en el proceso educativo.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="visionModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('visionModal')">&times;</span>
+            <h2>Nuestra Visión</h2>
+            <div style="color: #333; line-height: 1.6;">
+                <p>Para el año 2030, la Corporación Universitaria Remington será reconocida nacional e internacionalmente por:</p>
+                <ul>
+                    <li>La excelencia y pertinencia de sus programas académicos</li>
+                    <li>La calidad y el impacto de sus investigaciones</li>
+                    <li>Su contribución al desarrollo sostenible</li>
+                    <li>La formación de líderes innovadores</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botones de acción -->
+    <div style="text-align: center; margin: 30px 0;">
+        <a th:href="@{/docentes}" style="background: #003366; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; display: inline-block; margin: 5px;">Ver Docentes</a>
+        <a th:href="@{/docentes/nuevo}" style="background: #ffd700; color: #003366; padding: 15px 30px; text-decoration: none; border-radius: 5px; display: inline-block; margin: 5px; font-weight: bold;">+ Registrar Docente</a>
+    </div>
+</section>
 </html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout('Programas Académicos', ~{::section})}">
+<section>
+    <h2 style="color: #003366; text-align: center; font-size: 2em; margin-bottom: 30px;">Programas Académicos</h2>
+
+    <h3 style="color: #0055A4; border-bottom: 3px solid #ffd700; padding-bottom: 10px;">Pregrados</h3>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin: 30px 0;">
+
+        <div style="background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border-left: 5px solid #003366; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+            <div style="height: 150px; background: linear-gradient(135deg, #003366, #004488); display: flex; align-items: center; justify-content: center; color: white; font-size: 3em;">💻</div>
+            <div style="padding: 20px;">
+                <h4 style="color: #003366; margin-bottom: 10px;">Ingeniería de Sistemas</h4>
+                <p style="color: #666; font-size: 0.9em;">Formación en tecnología, desarrollo de software y redes.</p>
+                <p style="color: #003366; font-weight: bold; margin-top: 10px;">📅 9 semestres | 🎓 Presencial/Virtual</p>
+            </div>
+        </div>
+
+        <div style="background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border-left: 5px solid #003366; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+            <div style="height: 150px; background: linear-gradient(135deg, #003366, #004488); display: flex; align-items: center; justify-content: center; color: white; font-size: 3em;">🏭</div>
+            <div style="padding: 20px;">
+                <h4 style="color: #003366; margin-bottom: 10px;">Ingeniería Industrial</h4>
+                <p style="color: #666; font-size: 0.9em;">Desarrollo de habilidades gerenciales y optimización de procesos.</p>
+                <p style="color: #003366; font-weight: bold; margin-top: 10px;">📅 9 semestres | 🎓 Presencial/Virtual</p>
+            </div>
+        </div>
+
+        <div style="background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border-left: 5px solid #003366; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+            <div style="height: 150px; background: linear-gradient(135deg, #003366, #004488); display: flex; align-items: center; justify-content: center; color: white; font-size: 3em;">📊</div>
+            <div style="padding: 20px;">
+                <h4 style="color: #003366; margin-bottom: 10px;">Contaduría Pública</h4>
+                <p style="color: #666; font-size: 0.9em;">Formación en auditoría, finanzas y contabilidad.</p>
+                <p style="color: #003366; font-weight: bold; margin-top: 10px;">📅 9 semestres | 🎓 Presencial/Virtual</p>
+            </div>
+        </div>
+    </div>
+
+    <h3 style="color: #880E4F; border-bottom: 3px solid #ffd700; padding-bottom: 10px; margin-top: 40px;">Posgrados</h3>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin: 30px 0;">
+
+        <div style="background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border-left: 5px solid #880E4F; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+            <div style="height: 150px; background: linear-gradient(135deg, #880E4F, #C2185B); display: flex; align-items: center; justify-content: center; color: white; font-size: 3em;">📋</div>
+            <div style="padding: 20px;">
+                <h4 style="color: #880E4F; margin-bottom: 10px;">Especialización en Gerencia de Proyectos</h4>
+                <p style="color: #666; font-size: 0.9em;">Gestión de proyectos empresariales con enfoque en calidad.</p>
+            </div>
+        </div>
+
+        <div style="background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border-left: 5px solid #880E4F; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+            <div style="height: 150px; background: linear-gradient(135deg, #880E4F, #C2185B); display: flex; align-items: center; justify-content: center; color: white; font-size: 3em;">🔒</div>
+            <div style="padding: 20px;">
+                <h4 style="color: #880E4F; margin-bottom: 10px;">Especialización en Seguridad Informática</h4>
+                <p style="color: #666; font-size: 0.9em;">Protección de sistemas y ciberseguridad avanzada.</p>
+            </div>
+        </div>
+
+        <div style="background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border-left: 5px solid #880E4F; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+            <div style="height: 150px; background: linear-gradient(135deg, #880E4F, #C2185B); display: flex; align-items: center; justify-content: center; color: white; font-size: 3em;">🎓</div>
+            <div style="padding: 20px;">
+                <h4 style="color: #880E4F; margin-bottom: 10px;">Maestría en Administración</h4>
+                <p style="color: #666; font-size: 0.9em;">Enfoque en liderazgo y estrategia empresarial.</p>
+            </div>
+        </div>
+
+        <div style="background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border-left: 5px solid #880E4F; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+            <div style="height: 150px; background: linear-gradient(135deg, #880E4F, #C2185B); display: flex; align-items: center; justify-content: center; color: white; font-size: 3em;">📚</div>
+            <div style="padding: 20px;">
+                <h4 style="color: #880E4F; margin-bottom: 10px;">Maestría en Educación</h4>
+                <p style="color: #666; font-size: 0.9em;">Innovación en enseñanza y aprendizaje.</p>
+            </div>
+        </div>
+    </div>
+</section>
+</html>

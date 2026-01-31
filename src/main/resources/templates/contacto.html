@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout('Contacto', ~{::section})}">
+<section>
+    <div style="background: linear-gradient(135deg, #4a69bd, #6a89cc); padding: 50px 20px; text-align: center; color: white; border-radius: 10px; margin-bottom: 30px; animation: fadeIn 1s ease-in-out;">
+        <h1 style="font-size: 3em; font-weight: bold; text-shadow: 3px 3px 10px rgba(0,0,0,0.5); margin-bottom: 10px;">¡Contáctanos!</h1>
+        <p style="font-size: 1.2em; opacity: 0.9;">Estamos aquí para responder todas tus dudas</p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px;">
+
+        <!-- Info de contacto -->
+        <div style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px); padding: 30px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); color: #333;">
+            <h3 style="color: #003366; margin-bottom: 20px; font-size: 1.5em;">Información de Contacto</h3>
+
+            <div style="margin-bottom: 20px; padding: 15px; background: white; border-radius: 8px; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                <p style="margin: 0; color: #003366; font-weight: bold;">📍 Dirección</p>
+                <p style="margin: 5px 0 0 0; color: #555;">Calle 22 # 51-27, Caucasia, Antioquia, Colombia</p>
+            </div>
+
+            <div style="margin-bottom: 20px; padding: 15px; background: white; border-radius: 8px; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                <p style="margin: 0; color: #003366; font-weight: bold;">📞 Teléfono</p>
+                <p style="margin: 5px 0 0 0; color: #555;">(604) 839-10-00</p>
+            </div>
+
+            <div style="margin-bottom: 20px; padding: 15px; background: white; border-radius: 8px; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                <p style="margin: 0; color: #003366; font-weight: bold;">📧 Email</p>
+                <p style="margin: 5px 0 0 0; color: #555;">admisiones@uniremington.edu.co</p>
+            </div>
+
+            <div style="padding: 15px; background: white; border-radius: 8px; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                <p style="margin: 0; color: #003366; font-weight: bold;">🕒 Horario</p>
+                <p style="margin: 5px 0 0 0; color: #555;">Lunes a Viernes: 8:00 AM - 6:00 PM<br>Sábados: 8:00 AM - 1:00 PM</p>
+            </div>
+        </div>
+
+        <!-- Formulario -->
+        <div style="background: white; padding: 30px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+            <h3 style="color: #003366; margin-bottom: 20px; font-size: 1.5em;">Envíanos un mensaje</h3>
+
+            <form>
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; color: #003366; font-weight: bold; margin-bottom: 5px;">Nombre completo</label>
+                    <input type="text" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 5px; font-size: 16px;">
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; color: #003366; font-weight: bold; margin-bottom: 5px;">Email</label>
+                    <input type="email" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 5px; font-size: 16px;">
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; color: #003366; font-weight: bold; margin-bottom: 5px;">Asunto</label>
+                    <input type="text" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 5px; font-size: 16px;">
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; color: #003366; font-weight: bold; margin-bottom: 5px;">Mensaje</label>
+                    <textarea rows="5" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 5px; font-size: 16px; resize: vertical;"></textarea>
+                </div>
+
+                <button type="submit" style="width: 100%; background: #003366; color: white; padding: 15px; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; font-weight: bold; transition: background 0.3s;" onmouseover="this.style.background='#004488'" onmouseout="this.style.background='#003366'">
+                    📨 Enviar Mensaje
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Botón WhatsApp -->
+    <div style="text-align: center; margin-top: 30px;">
+        <a href="https://web.whatsapp.com/send?phone=573208701818&text=" target="_blank"
+           style="display: inline-block; background: #25D366; color: white; padding: 15px 30px; text-decoration: none; border-radius: 50px; font-size: 1.2em; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.3s;"
+           onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+            💬 Enviar WhatsApp
+        </a>
+    </div>
+
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</section>
+</html>

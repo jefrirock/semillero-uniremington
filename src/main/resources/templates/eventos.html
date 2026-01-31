@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout('Eventos', ~{::section})}">
+<section>
+    <div style="text-align: center; margin-bottom: 40px;">
+        <h2 style="color: #003366; font-size: 2.5em; margin-bottom: 10px;">Eventos Universitarios</h2>
+        <p style="color: #666;">Descubre todas nuestras actividades académicas y culturales</p>
+        <div style="width: 60px; height: 4px; background: #ffd700; margin: 15px auto;"></div>
+    </div>
+
+    <!-- Filtros -->
+    <div style="display: flex; justify-content: center; gap: 15px; margin-bottom: 30px; flex-wrap: wrap;">
+        <button style="padding: 8px 20px; border: 2px solid #003366; border-radius: 25px; background: #003366; color: white; cursor: pointer;">Todos</button>
+        <button style="padding: 8px 20px; border: 2px solid #003366; border-radius: 25px; background: transparent; color: #003366; cursor: pointer;">Académicos</button>
+        <button style="padding: 8px 20px; border: 2px solid #003366; border-radius: 25px; background: transparent; color: #003366; cursor: pointer;">Culturales</button>
+        <button style="padding: 8px 20px; border: 2px solid #003366; border-radius: 25px; background: transparent; color: #003366; cursor: pointer;">Tecnología</button>
+    </div>
+
+    <!-- Grid de Eventos -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-bottom: 50px;">
+
+        <div style="background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); transition: transform 0.3s;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
+            <div style="position: relative;">
+                <div style="height: 200px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 4em;">🤖</div>
+                <span style="position: absolute; top: 15px; right: 15px; background: #ffd700; color: #003366; padding: 5px 15px; border-radius: 20px; font-weight: bold; font-size: 0.9em;">Tecnología</span>
+            </div>
+            <div style="padding: 20px;">
+                <div style="color: #666; font-size: 0.9em; margin-bottom: 10px;">📅 10 de marzo de 2025</div>
+                <h3 style="color: #003366; margin-bottom: 15px;">Conferencia sobre IA en la Educación</h3>
+                <p style="color: #555; line-height: 1.6; margin-bottom: 20px;">Explora el impacto de la Inteligencia Artificial en la educación moderna con expertos internacionales.</p>
+                <a href="#" style="display: inline-block; padding: 8px 20px; background: #003366; color: white; text-decoration: none; border-radius: 5px;">Más información</a>
+            </div>
+        </div>
+
+        <div style="background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); transition: transform 0.3s;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
+            <div style="position: relative;">
+                <div style="height: 200px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 4em;">💼</div>
+                <span style="position: absolute; top: 15px; right: 15px; background: #ffd700; color: #003366; padding: 5px 15px; border-radius: 20px; font-weight: bold; font-size: 0.9em;">Académico</span>
+            </div>
+            <div style="padding: 20px;">
+                <div style="color: #666; font-size: 0.9em; margin-bottom: 10px;">📅 25 de abril de 2025</div>
+                <h3 style="color: #003366; margin-bottom: 15px;">Feria de Empleabilidad</h3>
+                <p style="color: #555; line-height: 1.6; margin-bottom: 20px;">Conecta con las mejores empresas y descubre oportunidades laborales en tu campo.</p>
+                <a href="#" style="display: inline-block; padding: 8px 20px; background: #003366; color: white; text-decoration: none; border-radius: 5px;">Más información</a>
+            </div>
+        </div>
+
+        <div style="background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); transition: transform 0.3s;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
+            <div style="position: relative;">
+                <div style="height: 200px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 4em;">🎭</div>
+                <span style="position: absolute; top: 15px; right: 15px; background: #ffd700; color: #003366; padding: 5px 15px; border-radius: 20px; font-weight: bold; font-size: 0.9em;">Cultural</span>
+            </div>
+            <div style="padding: 20px;">
+                <div style="color: #666; font-size: 0.9em; margin-bottom: 10px;">📅 10 de junio de 2025</div>
+                <h3 style="color: #003366; margin-bottom: 15px;">Eventos Culturales - La Mejor Sede</h3>
+                <p style="color: #555; line-height: 1.6; margin-bottom: 20px;">Presentaciones de eventos culturales de la sede Bajo Cauca. ¡No te lo pierdas!</p>
+                <a href="#" style="display: inline-block; padding: 8px 20px; background: #003366; color: white; text-decoration: none; border-radius: 5px;">Más información</a>
+            </div>
+        </div>
+
+        <div style="background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); transition: transform 0.3s;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
+            <div style="position: relative;">
+                <div style="height: 200px; background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 4em;">💡</div>
+                <span style="position: absolute; top: 15px; right: 15px; background: #ffd700; color: #003366; padding: 5px 15px; border-radius: 20px; font-weight: bold; font-size: 0.9em;">Tecnología</span>
+            </div>
+            <div style="padding: 20px;">
+                <div style="color: #666; font-size: 0.9em; margin-bottom: 10px;">📅 15 de mayo de 2025</div>
+                <h3 style="color: #003366; margin-bottom: 15px;">Simposio de Innovación Tecnológica</h3>
+                <p style="color: #555; line-height: 1.6; margin-bottom: 20px;">Presentaciones y talleres sobre las últimas tendencias en tecnología e innovación.</p>
+                <a href="#" style="display: inline-block; padding: 8px 20px; background: #003366; color: white; text-decoration: none; border-radius: 5px;">Más información</a>
+            </div>
+        </div>
+    </div>
+</section>
+</html>
