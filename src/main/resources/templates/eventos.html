@@ -9,18 +9,19 @@
 
     <!-- Filtros -->
     <div style="display: flex; justify-content: center; gap: 15px; margin-bottom: 30px; flex-wrap: wrap;">
-        <button style="padding: 8px 20px; border: 2px solid #003366; border-radius: 25px; background: #003366; color: white; cursor: pointer;">Todos</button>
-        <button style="padding: 8px 20px; border: 2px solid #003366; border-radius: 25px; background: transparent; color: #003366; cursor: pointer;">Académicos</button>
-        <button style="padding: 8px 20px; border: 2px solid #003366; border-radius: 25px; background: transparent; color: #003366; cursor: pointer;">Culturales</button>
-        <button style="padding: 8px 20px; border: 2px solid #003366; border-radius: 25px; background: transparent; color: #003366; cursor: pointer;">Tecnología</button>
+        <button onclick="filtrarEventos('todos')" id="btn-todos" style="padding: 8px 20px; border: 2px solid #003366; border-radius: 25px; background: #003366; color: white; cursor: pointer; font-weight: bold;">Todos</button>
+        <button onclick="filtrarEventos('academico')" id="btn-academico" style="padding: 8px 20px; border: 2px solid #003366; border-radius: 25px; background: transparent; color: #003366; cursor: pointer;">Académicos</button>
+        <button onclick="filtrarEventos('cultural')" id="btn-cultural" style="padding: 8px 20px; border: 2px solid #003366; border-radius: 25px; background: transparent; color: #003366; cursor: pointer;">Culturales</button>
+        <button onclick="filtrarEventos('tecnologia')" id="btn-tecnologia" style="padding: 8px 20px; border: 2px solid #003366; border-radius: 25px; background: transparent; color: #003366; cursor: pointer;">Tecnología</button>
     </div>
 
-    <!-- Grid de Eventos -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-bottom: 50px;">
+    <!-- Grid de Eventos - CON IMÁGENES REALES -->
+    <div class="eventos-grid" id="eventosContainer" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; margin-bottom: 50px; max-width: 1000px; margin-left: auto; margin-right: auto;">
 
-        <div style="background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); transition: transform 0.3s;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
+        <!-- Evento 1: IA en Educación -->
+        <div class="evento-card" data-categoria="tecnologia" style="background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); transition: transform 0.3s;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
             <div style="position: relative;">
-                <div style="height: 200px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 4em;">🤖</div>
+                <img src="/images/evento-ia.jpg" alt="IA en Educación" style="width: 100%; height: 200px; object-fit: cover;">
                 <span style="position: absolute; top: 15px; right: 15px; background: #ffd700; color: #003366; padding: 5px 15px; border-radius: 20px; font-weight: bold; font-size: 0.9em;">Tecnología</span>
             </div>
             <div style="padding: 20px;">
@@ -31,9 +32,10 @@
             </div>
         </div>
 
-        <div style="background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); transition: transform 0.3s;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
+        <!-- Evento 2: Feria Empleabilidad -->
+        <div class="evento-card" data-categoria="academico" style="background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); transition: transform 0.3s;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
             <div style="position: relative;">
-                <div style="height: 200px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 4em;">💼</div>
+                <img src="/images/evento-feria.jpg" alt="Feria Empleabilidad" style="width: 100%; height: 200px; object-fit: cover;">
                 <span style="position: absolute; top: 15px; right: 15px; background: #ffd700; color: #003366; padding: 5px 15px; border-radius: 20px; font-weight: bold; font-size: 0.9em;">Académico</span>
             </div>
             <div style="padding: 20px;">
@@ -44,22 +46,24 @@
             </div>
         </div>
 
-        <div style="background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); transition: transform 0.3s;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
+        <!-- Evento 3: Culturales -->
+        <div class="evento-card" data-categoria="cultural" style="background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); transition: transform 0.3s;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
             <div style="position: relative;">
-                <div style="height: 200px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 4em;">🎭</div>
-                <span style="position: absolute; top: 15px; right: 15px; background: #ffd700; color: #003366; padding: 5px 15px; border-radius: 20px; font-weight: bold; font-size: 0.9em;">Cultural</span>
+                <img src="/images/evento-cultural.jpg" alt="Eventos Culturales" style="width: 100%; height: 200px; object-fit: cover;">
+                <span style="position: absolute; top: 15px; right: 15px; background: #ffd700; color: #003366; padding: 5px 15px; border-radius: 20px; font-weight: bold; font-size: 0.9em;">Culturales</span>
             </div>
             <div style="padding: 20px;">
                 <div style="color: #666; font-size: 0.9em; margin-bottom: 10px;">📅 10 de junio de 2025</div>
-                <h3 style="color: #003366; margin-bottom: 15px;">Eventos Culturales - La Mejor Sede</h3>
-                <p style="color: #555; line-height: 1.6; margin-bottom: 20px;">Presentaciones de eventos culturales de la sede Bajo Cauca. ¡No te lo pierdas!</p>
+                <h3 style="color: #003366; margin-bottom: 15px;">Eventos Culturales Nuestra Sede, La Mejor</h3>
+                <p style="color: #555; line-height: 1.6; margin-bottom: 20px;">Presentaciones de eventos culturales de la sede Bajo Cauca.</p>
                 <a href="#" style="display: inline-block; padding: 8px 20px; background: #003366; color: white; text-decoration: none; border-radius: 5px;">Más información</a>
             </div>
         </div>
 
-        <div style="background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); transition: transform 0.3s;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
+        <!-- Evento 4: Simposio -->
+        <div class="evento-card" data-categoria="tecnologia" style="background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); transition: transform 0.3s;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
             <div style="position: relative;">
-                <div style="height: 200px; background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 4em;">💡</div>
+                <img src="/images/evento-simposio.jpg" alt="Simposio" style="width: 100%; height: 200px; object-fit: cover;">
                 <span style="position: absolute; top: 15px; right: 15px; background: #ffd700; color: #003366; padding: 5px 15px; border-radius: 20px; font-weight: bold; font-size: 0.9em;">Tecnología</span>
             </div>
             <div style="padding: 20px;">
@@ -70,5 +74,45 @@
             </div>
         </div>
     </div>
+
+    <!-- Mensaje cuando no hay eventos -->
+    <div id="sinEventos" style="display: none; text-align: center; padding: 40px; color: #666;">
+        <p>No hay eventos en esta categoría.</p>
+    </div>
+
+    <script>
+        function filtrarEventos(categoria) {
+            const tarjetas = document.querySelectorAll('.evento-card');
+            const sinEventos = document.getElementById('sinEventos');
+            let eventosVisibles = 0;
+
+            // Actualizar botones
+            const botones = ['todos', 'academico', 'cultural', 'tecnologia'];
+            botones.forEach(btn => {
+                const boton = document.getElementById('btn-' + btn);
+                if (btn === categoria) {
+                    boton.style.background = '#003366';
+                    boton.style.color = 'white';
+                    boton.style.fontWeight = 'bold';
+                } else {
+                    boton.style.background = 'transparent';
+                    boton.style.color = '#003366';
+                    boton.style.fontWeight = 'normal';
+                }
+            });
+
+            // Filtrar
+            tarjetas.forEach(tarjeta => {
+                if (categoria === 'todos' || tarjeta.dataset.categoria === categoria) {
+                    tarjeta.style.display = 'block';
+                    eventosVisibles++;
+                } else {
+                    tarjeta.style.display = 'none';
+                }
+            });
+
+            sinEventos.style.display = eventosVisibles === 0 ? 'block' : 'none';
+        }
+    </script>
 </section>
 </html>
