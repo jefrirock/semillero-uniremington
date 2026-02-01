@@ -46,7 +46,7 @@ public class HomeController {
         model.addAttribute("docente", new Docente());
         return "formulario-docente";
     }
-
+    metodoQueNoExiste(); // Error de compilación
     // Guardar docente con foto
     @PostMapping("/docentes/guardar")
     public String guardarDocente(@ModelAttribute Docente docente,
