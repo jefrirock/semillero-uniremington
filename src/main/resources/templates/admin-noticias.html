@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout('Admin Noticias', ~{::section})}">
+<section style="max-width: 800px; margin: 0 auto; padding: 20px;">
+
+    <h1 style="color: #003366; margin-bottom: 30px;">📰 Administrar Noticias del Carrusel</h1>
+
+    <!-- Formulario para crear noticia -->
+    <div style="background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 40px;">
+        <h3 style="color: #003366; margin-bottom: 20px;">Agregar Nueva Noticia</h3>
+
+        <form th:action="@{/admin/noticias/guardar}" method="post" enctype="multipart/form-data">
+
+            <!-- Título -->
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; color: #003366; font-weight: bold; margin-bottom: 5px;">Título *</label>
+                <input type="text" name="titulo" required
+                       style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 5px; font-size: 16px;">
+            </div>
+
+            <!-- Subtítulo -->
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; color: #003366; font-weight: bold; margin-bottom: 5px;">Subtítulo/Descripción corta</label>
+                <input type="text" name="subtitulo"
+                       style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 5px; font-size: 16px;">
+            </div>
+
+            <!-- Imagen del banner -->
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; color: #003366; font-weight: bold; margin-bottom: 5px;">Imagen del Banner *</label>
+                <input type="file" name="imagen" accept="image/*" required
+                       style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 5px;">
+                <small style="color: #666;">Tamaño recomendado: 1200x400 pixeles (formato panorámico)</small>
+            </div>
+
+            <!-- Link botón -->
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; color: #003366; font-weight: bold; margin-bottom: 5px;">Link del botón "Ver más" (Opcional)</label>
+                <input type="text" name="link" placeholder="Ej: /eventos o https://uniremington.edu.co"
+                       style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 5px; font-size: 16px;">
+            </div>
+
+            <!-- Orden -->
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; color: #003366; font-weight: bold; margin-bottom: 5px;">Orden (0=primero, 1=segundo...)</label>
+                <input type="number" name="orden" value="0" min="0"
+                       style="width: 100px; padding: 10px; border: 2px solid #e0e0e0; border-radius: 5px; font-size: 16px;">
+            </div>
+
+            <button type="submit" style="background: #003366; color: white; padding: 12px 30px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">
+                💾 Guardar Noticia
+            </button>
+        </form>
+    </div>
+
+    <!-- Lista de noticias existentes -->
+    <h3 style="color: #003366; margin-bottom: 20px;">Noticias Activas</h3>
+
+    <div th:if="${#lists.isEmpty(noticias)}" style="text-align: center; padding: 40px; color: #666; background: #f8f9fa; border-radius: 10px;">
+        <p>No hay noticias. Crea la primera arriba ↑</p>
+    </div>
+
+    <div th:unless="${#lists.isEmpty(noticias)}" style="display: grid; gap: 15px;">
+        <div th:each="noticia : ${noticias}" style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; gap: 15px; align-items: center;">
+
+            <img th:if="${noticia.imagenUrl}" th:src="@{'/uploads/' + ${noticia.imagenUrl}}"
+                 style="width: 120px; height: 80px; object-fit: cover; border-radius: 5px;">
+
+            <div style="flex: 1;">
+                <h4 style="color: #003366; margin: 0 0 5px 0;" th:text="${noticia.titulo}">Título</h4>
+                <p style="color: #666; margin: 0; font-size: 0.9em;" th:text="${#strings.abbreviate(noticia.subtitulo, 60)}">Subtítulo...</p>
+                <small style="color: #999;">Orden: <span th:text="${noticia.orden}">0</span></small>
+            </div>
+
+            <a th:href="@{/admin/noticias/eliminar/{id}(id=${noticia.id})}"
+               onclick="return confirm('¿Eliminar esta noticia?')"
+               style="background: #dc3545; color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-size: 0.85em;">
+                🗑️ Eliminar
+            </a>
+        </div>
+    </div>
+
+    <div style="margin-top: 30px; text-align: center;">
+        <a th:href="@{/}" style="background: #003366; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">
+            ← Volver al Inicio
+        </a>
+    </div>
+</section>
+</html>

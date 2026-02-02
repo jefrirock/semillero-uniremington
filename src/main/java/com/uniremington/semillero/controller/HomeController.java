@@ -3,15 +3,18 @@ package com.uniremington.semillero.controller;
 import com.uniremington.semillero.model.Docente;
 import com.uniremington.semillero.model.Evento;
 import com.uniremington.semillero.model.FotoEvento;
+import com.uniremington.semillero.model.Noticia;
 import com.uniremington.semillero.service.DocenteService;
 import com.uniremington.semillero.service.EventoService;
 import com.uniremington.semillero.repository.FotoEventoRepository;
+import com.uniremington.semillero.repository.NoticiaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Controller
@@ -24,16 +27,20 @@ public class HomeController {
     private FotoEventoRepository fotoEventoRepository;
 
     @Autowired
+    private NoticiaRepository noticiaRepository;
+
+    @Autowired
     public HomeController(DocenteService docenteService, EventoService eventoService) {
         this.docenteService = docenteService;
         this.eventoService = eventoService;
     }
 
-    // Página de inicio
+    // Página de inicio con carrusel de noticias
     @GetMapping("/")
     public String index(Model model) {
         model.addAttribute("docentes", docenteService.listarTodos());
         model.addAttribute("eventos", eventoService.listarProximos());
+        model.addAttribute("noticias", noticiaRepository.findByActivaTrueOrderByOrdenAsc());
         return "index";
     }
 
@@ -138,10 +145,10 @@ public class HomeController {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return "redirect:/eventos/" + evento.getId(); // Redirige al detalle para agregar fotos
+        return "redirect:/eventos/" + evento.getId();
     }
 
-    // ✅ CRUD - EDITAR
+    // ✅ CRUD - EDITAR EVENTO
     @GetMapping("/eventos/editar/{id}")
     public String editarEvento(@PathVariable Long id, Model model) {
         Evento evento = eventoService.buscarPorId(id)
@@ -151,7 +158,7 @@ public class HomeController {
         return "formulario-evento";
     }
 
-    // ✅ CRUD - ACTUALIZAR
+    // ✅ CRUD - ACTUALIZAR EVENTO
     @PostMapping("/eventos/actualizar")
     public String actualizarEvento(@ModelAttribute Evento evento,
                                    @RequestParam("imagen") MultipartFile imagen) {
@@ -170,13 +177,11 @@ public class HomeController {
         return "redirect:/eventos/" + evento.getId();
     }
 
-    // ✅ CRUD - ELIMINAR
+    // ✅ CRUD - ELIMINAR EVENTO
     @GetMapping("/eventos/eliminar/{id}")
     public String eliminarEvento(@PathVariable Long id) {
-        // Primero eliminar fotos asociadas
         List<FotoEvento> fotos = fotoEventoRepository.findByEventoId(id);
         fotoEventoRepository.deleteAll(fotos);
-        // Luego eliminar evento
         eventoService.eliminar(id);
         return "redirect:/eventos";
     }
@@ -235,4 +240,46 @@ public class HomeController {
         fotoEventoRepository.deleteById(fotoId);
         return "redirect:/eventos/" + eventoId;
     }
+
+    // ✅ ADMIN NOTICIAS (para el carrusel)
+    @GetMapping("/admin/noticias")
+    public String adminNoticias(Model model) {
+        model.addAttribute("noticias", noticiaRepository.findAll());
+        model.addAttribute("noticia", new Noticia());
+        return "admin-noticias";
+    }
+
+    // ✅ GUARDAR NOTICIA
+    @PostMapping("/admin/noticias/guardar")
+    public String guardarNoticia(@ModelAttribute Noticia noticia,
+                                 @RequestParam("imagen") MultipartFile imagen) {
+        try {
+            if (!imagen.isEmpty()) {
+                String uploadDir = "uploads/";
+                java.io.File dir = new java.io.File(uploadDir);
+                if (!dir.exists()) {
+                    dir.mkdirs();
+                }
+                String fileName = "noticia_" + System.currentTimeMillis() + "_" + imagen.getOriginalFilename();
+                java.nio.file.Path filePath = java.nio.file.Paths.get(uploadDir + fileName);
+                java.nio.file.Files.copy(imagen.getInputStream(), filePath);
+                noticia.setImagenUrl(fileName);
+            }
+            if (noticia.getFechaPublicacion() == null) {
+                noticia.setFechaPublicacion(LocalDate.now());
+            }
+            noticiaRepository.save(noticia);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "redirect:/admin/noticias";
+    }
+
+    // ✅ ELIMINAR NOTICIA
+    @GetMapping("/admin/noticias/eliminar/{id}")
+    public String eliminarNoticia(@PathVariable Long id) {
+        noticiaRepository.deleteById(id);
+        return "redirect:/admin/noticias";
+    }
+
 }
