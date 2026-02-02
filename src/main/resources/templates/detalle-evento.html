@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout('Detalle Evento', ~{::section})}">
+<section style="max-width: 1200px; margin: 0 auto; padding: 10px;">
+
+    <!-- Header compacto en una línea -->
+    <div style="background: #003366; color: white; padding: 15px 20px; border-radius: 8px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <div>
+            <span th:text="${evento.categoria}" style="background: #ffd700; color: #003366; padding: 3px 10px; border-radius: 15px; font-size: 0.75em; text-transform: uppercase; font-weight: bold; margin-right: 10px;">Categoría</span>
+            <span style="font-size: 1.3em; font-weight: bold;" th:text="${evento.titulo}">Título</span>
+        </div>
+        <div style="font-size: 0.9em; opacity: 0.9;">
+            📅 <span th:text="${#temporals.format(evento.fecha, 'dd/MM/yyyy')}">Fecha</span>
+            <span th:if="${evento.lugar}" style="margin-left: 10px;">📍 <span th:text="${evento.lugar}">Lugar</span></span>
+        </div>
+    </div>
+
+    <!-- Descripción compacta -->
+    <div style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 15px;">
+        <p style="color: #555; line-height: 1.5; margin: 0;" th:text="${evento.descripcion}">Descripción...</p>
+    </div>
+
+    <!-- Barra de acciones -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+        <h3 style="color: #003366; margin: 0; font-size: 1.1em;">🖼️ Galería (<span th:text="${cantidadFotos}">0</span>)</h3>
+        <a th:href="@{/eventos}" style="color: #003366; text-decoration: none; font-size: 0.9em;">← Volver</a>
+    </div>
+
+    <!-- 🖼️ GRID DE FOTOS GRANDE -->
+    <div th:if="${#lists.isEmpty(fotos)}" style="text-align: center; padding: 30px; color: #666; background: #f8f9fa; border-radius: 8px; border: 2px dashed #ddd; margin-bottom: 15px;">
+        <p style="margin: 0;">No hay fotos aún. Sube las primeras desde el formulario de abajo.</p>
+    </div>
+
+    <div th:unless="${#lists.isEmpty(fotos)}" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; margin-bottom: 20px;">
+        <div th:each="foto, iterStat : ${fotos}"
+             style="position: relative; aspect-ratio: 1; cursor: pointer; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"
+             th:onclick="'abrirGaleria(' + ${iterStat.index} + ')'">
+
+            <img th:src="@{'/uploads/' + ${foto.nombreArchivo}}"
+                 style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.2s;"
+                 onmouseover="this.style.transform='scale(1.05)'"
+                 onmouseout="this.style.transform='scale(1)'">
+
+            <!-- Botón eliminar -->
+            <a th:href="@{/eventos/fotos/eliminar/{id}(id=${foto.id})}"
+               onclick="event.stopPropagation(); return confirm('¿Eliminar?');"
+               style="position: absolute; top: 5px; right: 5px; background: rgba(220,53,69,0.9); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 12px;">
+                ×
+            </a>
+        </div>
+    </div>
+
+    <!-- Formulario compacto colapsable -->
+    <details style="background: #f0f4f8; border-radius: 8px; border: 1px solid #ddd;">
+        <summary style="padding: 12px 15px; cursor: pointer; color: #003366; font-weight: bold; list-style: none;">
+            📷 <span style="margin-left: 5px;">Agregar más fotos</span>
+            <span style="float: right;">+</span>
+        </summary>
+        <div style="padding: 15px; border-top: 1px solid #ddd;">
+            <form th:action="@{/eventos/{id}/fotos(id=${evento.id})}" method="post" enctype="multipart/form-data" style="display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end;">
+                <div style="flex: 1; min-width: 200px;">
+                    <input type="file" name="fotos" multiple accept="image/*" required
+                           style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; width: 100%; font-size: 0.9em;">
+                </div>
+                <button type="submit" style="background: #003366; color: white; padding: 8px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">
+                    Subir
+                </button>
+            </form>
+            <small style="color: #666; display: block; margin-top: 5px;">Selecciona múltiples fotos con Ctrl+Click</small>
+        </div>
+    </details>
+
+    <!-- Lightbox -->
+    <div id="lightbox" style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.95);" onclick="cerrarGaleria(event)">
+
+        <span style="position: absolute; top: 10px; right: 20px; color: white; font-size: 35px; cursor: pointer; z-index: 10000;">&times;</span>
+
+        <div style="position: absolute; top: 10px; left: 50%; transform: translateX(-50%); color: white; font-size: 16px; z-index: 10000; background: rgba(0,0,0,0.5); padding: 5px 15px; border-radius: 20px;">
+            <span id="contadorActual">1</span> / <span th:text="${cantidadFotos}">0</span>
+        </div>
+
+        <span onclick="cambiarFoto(-1); event.stopPropagation();"
+              style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: white; font-size: 40px; cursor: pointer; padding: 10px; user-select: none;">❮</span>
+
+        <div style="display: flex; align-items: center; justify-content: center; height: 100%; padding: 50px;">
+            <img id="imagenGaleria" src="" style="max-width: 90%; max-height: 90%; object-fit: contain; border-radius: 4px;">
+        </div>
+
+        <span onclick="cambiarFoto(1); event.stopPropagation();"
+              style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: white; font-size: 40px; cursor: pointer; padding: 10px; user-select: none;">❯</span>
+    </div>
+
+    <script th:inline="javascript">
+        var fotosUrls = /*[[${fotos.![nombreArchivo]}]]*/ [];
+        var fotoActual = 0;
+
+        function abrirGaleria(index) {
+            if (fotosUrls.length === 0) return;
+            fotoActual = index || 0;
+            document.getElementById('lightbox').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+            mostrarFoto();
+        }
+
+        function cerrarGaleria(event) {
+            if (event.target.id === 'lightbox' || event.target.innerText === '×') {
+                document.getElementById('lightbox').style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        function mostrarFoto() {
+            if (fotoActual < 0) fotoActual = fotosUrls.length - 1;
+            if (fotoActual >= fotosUrls.length) fotoActual = 0;
+            document.getElementById('imagenGaleria').src = '/uploads/' + fotosUrls[fotoActual];
+            document.getElementById('contadorActual').textContent = (fotoActual + 1);
+        }
+
+        function cambiarFoto(direccion) {
+            fotoActual += direccion;
+            mostrarFoto();
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (document.getElementById('lightbox').style.display === 'block') {
+                if (e.key === 'ArrowRight') cambiarFoto(1);
+                if (e.key === 'ArrowLeft') cambiarFoto(-1);
+                if (e.key === 'Escape') {
+                    document.getElementById('lightbox').style.display = 'none';
+                    document.body.style.overflow = 'auto';
+                }
+            }
+        });
+    </script>
+</section>
+</html>
