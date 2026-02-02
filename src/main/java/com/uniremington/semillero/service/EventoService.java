@@ -10,4 +10,5 @@ public interface EventoService {
     List<Evento> listarProximos();  // Eventos futuros
     Evento guardar(Evento evento);
     void eliminar(Long id);
+    List<Evento> listarPorCategoria(String categoria);
 }

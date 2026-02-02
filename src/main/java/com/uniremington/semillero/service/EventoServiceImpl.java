@@ -30,7 +30,7 @@ public class EventoServiceImpl implements EventoService {
 
     @Override
     public List<Evento> listarProximos() {
-        return eventoRepository.findByFechaAfter(LocalDate.now());
+        return eventoRepository.findByFechaAfterOrderByFechaDesc(LocalDate.now());
     }
 
     @Override
@@ -41,5 +41,10 @@ public class EventoServiceImpl implements EventoService {
     @Override
     public void eliminar(Long id) {
         eventoRepository.deleteById(id);
+    }
+
+    @Override
+    public List<Evento> listarPorCategoria(String categoria) {
+        return eventoRepository.findByCategoria(categoria);
     }
 }

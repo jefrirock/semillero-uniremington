@@ -42,11 +42,12 @@ public class DocenteServiceImpl implements DocenteService {
         docenteRepository.deleteById(id);
     }
 
-    @Override
+       @Override
     public List<Docente> buscar(String termino) {
         List<Docente> porNombre = docenteRepository.findByNombreContainingIgnoreCase(termino);
         List<Docente> porArea = docenteRepository.findByAreaContainingIgnoreCase(termino);
         porNombre.addAll(porArea);
         return porNombre.stream().distinct().toList();
     }
+
 }

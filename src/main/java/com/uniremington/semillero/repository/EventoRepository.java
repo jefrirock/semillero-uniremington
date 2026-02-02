@@ -10,4 +10,5 @@ import java.util.List;
 public interface EventoRepository extends JpaRepository<Evento, Long> {
     List<Evento> findByCategoria(String categoria);
     List<Evento> findByFechaAfter(LocalDate fecha);
+    List<Evento> findByFechaAfterOrderByFechaDesc(LocalDate fecha);
 }

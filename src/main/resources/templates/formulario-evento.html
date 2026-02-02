@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout('Crear Evento', ~{::section})}">
+<section style="max-width: 800px; margin: 0 auto;">
+    <div style="background: #003366; color: white; padding: 30px; border-radius: 10px 10px 0 0; text-align: center;">
+        <h1 style="margin: 0;">Crear Nuevo Evento</h1>
+        <p style="margin: 10px 0 0 0; opacity: 0.9;">Complete la información del evento universitario</p>
+    </div>
+
+    <div style="background: white; padding: 40px; border-radius: 0 0 10px 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+        <form th:action="@{/eventos/guardar}" th:object="${evento}" method="post" enctype="multipart/form-data">
+
+            <!-- Imagen del evento -->
+            <div style="margin-bottom: 20px; text-align: center;">
+                <label style="display: block; color: #003366; font-weight: bold; margin-bottom: 8px;">Imagen del Evento</label>
+                <div style="border: 2px dashed #003366; border-radius: 10px; padding: 20px; background: #f8f9fa;">
+                    <input type="file" name="imagen" accept="image/*" id="imagenInput"
+                           style="display: none;" onchange="previewImage(this)">
+                    <label for="imagenInput" style="cursor: pointer; display: block;">
+                        <div id="preview" style="width: 100%; max-width: 300px; height: 200px; background: #ddd; margin: 0 auto; display: flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 10px;">
+                            <span style="font-size: 3em;">🖼️</span>
+                        </div>
+                        <p style="color: #003366; margin-top: 10px;">Haz clic para seleccionar una imagen</p>
+                    </label>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; color: #003366; font-weight: bold; margin-bottom: 8px;">Título del Evento *</label>
+                <input type="text" th:field="*{titulo}" required placeholder="Ej: Conferencia de IA"
+                       style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 5px; font-size: 16px;">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                <div>
+                    <label style="display: block; color: #003366; font-weight: bold; margin-bottom: 8px;">Fecha *</label>
+                    <input type="date" th:field="*{fecha}" required
+                           style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 5px; font-size: 16px;">
+                </div>
+                <div>
+                    <label style="display: block; color: #003366; font-weight: bold; margin-bottom: 8px;">Categoría *</label>
+                    <select th:field="*{categoria}" required style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 5px; font-size: 16px; background: white;">
+                        <option value="academico">Académico</option>
+                        <option value="cultural">Cultural</option>
+                        <option value="tecnologia">Tecnología</option>
+                        <option value="deportivo">Deportivo</option>
+                        <option value="otro">Otro</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; color: #003366; font-weight: bold; margin-bottom: 8px;">Lugar</label>
+                <input type="text" th:field="*{lugar}" placeholder="Ej: Auditorio Principal"
+                       style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 5px; font-size: 16px;">
+            </div>
+
+            <div style="margin-bottom: 30px;">
+                <label style="display: block; color: #003366; font-weight: bold; margin-bottom: 8px;">Descripción *</label>
+                <textarea th:field="*{descripcion}" required rows="4" placeholder="Describe el evento..."
+                          style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 5px; font-size: 16px; resize: vertical;"></textarea>
+            </div>
+
+            <div style="display: flex; gap: 15px; justify-content: center;">
+                <button type="submit" style="background: #003366; color: white; padding: 12px 40px; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; font-weight: bold;">
+                    💾 Guardar Evento
+                </button>
+                <a th:href="@{/eventos}" style="background: #666; color: white; padding: 12px 40px; border-radius: 5px; text-decoration: none; font-size: 16px; display: inline-block;">
+                    Cancelar
+                </a>
+            </div>
+        </form>
+
+        <script>
+            function previewImage(input) {
+                if (input.files && input.files[0]) {
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        document.getElementById('preview').innerHTML = '<img src="' + e.target.result + '" style="width: 100%; height: 100%; object-fit: cover;">';
+                    }
+                    reader.readAsDataURL(input.files[0]);
+                }
+            }
+        </script>
+    </div>
+</section>
+</html>
