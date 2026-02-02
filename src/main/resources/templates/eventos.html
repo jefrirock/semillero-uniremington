@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout('Eventos', ~{::section})}">
 <section>
-    <div style="text-align: center; margin-bottom: 40px;">
+    <div style="text-align: center; margin-bottom: 30px;">
         <h2 style="color: #003366; font-size: 2.5em; margin-bottom: 10px;">Eventos Universitarios</h2>
         <p style="color: #666;">Descubre todas nuestras actividades académicas y culturales</p>
         <div style="width: 60px; height: 4px; background: #ffd700; margin: 15px auto;"></div>
@@ -38,8 +38,8 @@
         </a>
     </div>
 
-    <!-- EVENTOS DINÁMICOS DE LA BD (ARRIBA) -->
-    <div class="eventos-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; margin-bottom: 50px; max-width: 1200px; margin-left: auto; margin-right: auto;">
+    <!-- EVENTOS DINÁMICOS DE LA BD -->
+    <div class="eventos-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; margin-bottom: 30px; max-width: 1200px; margin-left: auto; margin-right: auto;">
 
         <div th:each="evento : ${eventos}" style="background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); transition: transform 0.3s;"
              onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
@@ -66,7 +66,7 @@
                 <h3 style="color: #003366; margin-bottom: 10px; font-size: 1.2em;" th:text="${evento.titulo}">Título</h3>
                 <p style="color: #555; line-height: 1.5; margin-bottom: 15px; font-size: 0.9em;" th:text="${#strings.abbreviate(evento.descripcion, 60)}">Descripción...</p>
 
-                <!-- BOTONES: Ver Galería, Editar, Eliminar -->
+                <!-- BOTONES -->
                 <div style="display: flex; gap: 5px;">
                     <a th:href="@{/eventos/{id}(id=${evento.id})}"
                        style="flex: 2; padding: 8px; background: #003366; color: white; text-decoration: none; border-radius: 5px; text-align: center; font-weight: bold; font-size: 0.85em;">
@@ -84,74 +84,63 @@
                 </div>
             </div>
         </div>
-
-        <!-- Mensaje si no hay eventos -->
-        <div th:if="${#lists.isEmpty(eventos)}" style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #666; background: #f8f9fa; border-radius: 10px;">
-            <p style="font-size: 1.2em;">No hay eventos disponibles.</p>
-            <a th:href="@{/eventos/nuevo}" style="background: #003366; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block; margin-top: 10px;">
-                Crear el primer evento
-            </a>
-        </div>
     </div>
 
-    <hr style="border: none; border-top: 3px solid #ffd700; margin: 40px auto; max-width: 200px;">
+    <!-- Línea divisoria más compacta -->
+    <hr style="border: none; border-top: 2px solid #ffd700; margin: 30px auto; width: 100px;">
 
-    <!-- EVENTOS ESTÁTICOS ORIGINALES (ABAJO) -->
-    <div style="text-align: center; margin-bottom: 30px;">
-        <h3 style="color: #003366; font-size: 1.5em;">Eventos Destacados Anteriores</h3>
+    <!-- EVENTOS ESTÁTICOS ORIGINALES (AHORA MÁS ARRIBA) -->
+    <div style="text-align: center; margin-bottom: 20px;">
+        <h3 style="color: #003366; font-size: 1.4em; margin: 0;">Eventos Destacados Anteriores</h3>
     </div>
 
-    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; margin-bottom: 50px; max-width: 1000px; margin-left: auto; margin-right: auto; opacity: 0.9;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; margin-bottom: 40px; max-width: 1000px; margin-left: auto; margin-right: auto; opacity: 0.9;">
 
         <!-- Evento 1: IA -->
-        <div style="background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
-            <div style="position: relative;">
-                <img src="/images/evento-ia.jpg" alt="IA" style="width: 100%; height: 200px; object-fit: cover;">
-                <span style="position: absolute; top: 15px; right: 15px; background: #ffd700; color: #003366; padding: 5px 15px; border-radius: 20px; font-weight: bold;">Tecnología</span>
+        <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+            <div style="position: relative; height: 180px;">
+                <img src="/images/evento-ia.jpg" alt="IA" style="width: 100%; height: 100%; object-fit: cover;">
+                <span style="position: absolute; top: 10px; right: 10px; background: #ffd700; color: #003366; padding: 4px 12px; border-radius: 15px; font-weight: bold; font-size: 0.85em;">Tecnología</span>
             </div>
-            <div style="padding: 20px;">
-                <div style="color: #666; font-size: 0.9em; margin-bottom: 10px;">📅 10 de marzo de 2025</div>
-                <h3 style="color: #003366; margin-bottom: 15px;">Conferencia sobre IA en Educación</h3>
-                <p style="color: #555; line-height: 1.6;">Explora el impacto de la Inteligencia Artificial en la educación moderna.</p>
+            <div style="padding: 15px;">
+                <div style="color: #666; font-size: 0.85em; margin-bottom: 5px;">📅 10 marzo 2025</div>
+                <h4 style="color: #003366; margin: 0; font-size: 1.1em;">Conferencia IA en Educación</h4>
             </div>
         </div>
 
         <!-- Evento 2: Feria -->
-        <div style="background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
-            <div style="position: relative;">
-                <img src="/images/evento-feria.jpg" alt="Feria" style="width: 100%; height: 200px; object-fit: cover;">
-                <span style="position: absolute; top: 15px; right: 15px; background: #ffd700; color: #003366; padding: 5px 15px; border-radius: 20px; font-weight: bold;">Académico</span>
+        <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+            <div style="position: relative; height: 180px;">
+                <img src="/images/evento-feria.jpg" alt="Feria" style="width: 100%; height: 100%; object-fit: cover;">
+                <span style="position: absolute; top: 10px; right: 10px; background: #ffd700; color: #003366; padding: 4px 12px; border-radius: 15px; font-weight: bold; font-size: 0.85em;">Académico</span>
             </div>
-            <div style="padding: 20px;">
-                <div style="color: #666; font-size: 0.9em; margin-bottom: 10px;">📅 25 de abril de 2025</div>
-                <h3 style="color: #003366; margin-bottom: 15px;">Feria de Empleabilidad</h3>
-                <p style="color: #555; line-height: 1.6;">Conecta con las mejores empresas y descubre oportunidades laborales.</p>
+            <div style="padding: 15px;">
+                <div style="color: #666; font-size: 0.85em; margin-bottom: 5px;">📅 25 abril 2025</div>
+                <h4 style="color: #003366; margin: 0; font-size: 1.1em;">Feria de Empleabilidad</h4>
             </div>
         </div>
 
         <!-- Evento 3: Cultural -->
-        <div style="background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
-            <div style="position: relative;">
-                <img src="/images/evento-cultural.jpg" alt="Cultural" style="width: 100%; height: 200px; object-fit: cover;">
-                <span style="position: absolute; top: 15px; right: 15px; background: #ffd700; color: #003366; padding: 5px 15px; border-radius: 20px; font-weight: bold;">Culturales</span>
+        <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+            <div style="position: relative; height: 180px;">
+                <img src="/images/evento-cultural.jpg" alt="Cultural" style="width: 100%; height: 100%; object-fit: cover;">
+                <span style="position: absolute; top: 10px; right: 10px; background: #ffd700; color: #003366; padding: 4px 12px; border-radius: 15px; font-weight: bold; font-size: 0.85em;">Culturales</span>
             </div>
-            <div style="padding: 20px;">
-                <div style="color: #666; font-size: 0.9em; margin-bottom: 10px;">📅 10 de junio de 2025</div>
-                <h3 style="color: #003366; margin-bottom: 15px;">Eventos Culturales Nuestra Sede</h3>
-                <p style="color: #555; line-height: 1.6;">Presentaciones culturales de la sede Bajo Cauca.</p>
+            <div style="padding: 15px;">
+                <div style="color: #666; font-size: 0.85em; margin-bottom: 5px;">📅 10 junio 2025</div>
+                <h4 style="color: #003366; margin: 0; font-size: 1.1em;">Eventos Culturales</h4>
             </div>
         </div>
 
         <!-- Evento 4: Simposio -->
-        <div style="background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
-            <div style="position: relative;">
-                <img src="/images/evento-simposio.jpg" alt="Simposio" style="width: 100%; height: 200px; object-fit: cover;">
-                <span style="position: absolute; top: 15px; right: 15px; background: #ffd700; color: #003366; padding: 5px 15px; border-radius: 20px; font-weight: bold;">Tecnología</span>
+        <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+            <div style="position: relative; height: 180px;">
+                <img src="/images/evento-simposio.jpg" alt="Simposio" style="width: 100%; height: 100%; object-fit: cover;">
+                <span style="position: absolute; top: 10px; right: 10px; background: #ffd700; color: #003366; padding: 4px 12px; border-radius: 15px; font-weight: bold; font-size: 0.85em;">Tecnología</span>
             </div>
-            <div style="padding: 20px;">
-                <div style="color: #666; font-size: 0.9em; margin-bottom: 10px;">📅 15 de mayo de 2025</div>
-                <h3 style="color: #003366; margin-bottom: 15px;">Simposio de Innovación Tecnológica</h3>
-                <p style="color: #555; line-height: 1.6;">Tendencias en tecnología e innovación.</p>
+            <div style="padding: 15px;">
+                <div style="color: #666; font-size: 0.85em; margin-bottom: 5px;">📅 15 mayo 2025</div>
+                <h4 style="color: #003366; margin: 0; font-size: 1.1em;">Simposio Innovación</h4>
             </div>
         </div>
     </div>
