@@ -1,17 +1,12 @@
 package com.uniremington.semillero.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
 import java.time.LocalDate;
 
 @Entity
 @Table(name = "noticias")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class Noticia {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -27,5 +22,43 @@ public class Noticia {
     private LocalDate fechaPublicacion;
 
     private Boolean activa = true;
-    private Integer orden = 0; // Para ordenar en el carrusel
+    private Integer orden = 0;
+
+    public Noticia() {}
+
+    public Noticia(Long id, String titulo, String subtitulo, String imagenUrl,
+                   String link, LocalDate fechaPublicacion, Boolean activa, Integer orden) {
+        this.id = id;
+        this.titulo = titulo;
+        this.subtitulo = subtitulo;
+        this.imagenUrl = imagenUrl;
+        this.link = link;
+        this.fechaPublicacion = fechaPublicacion;
+        this.activa = activa;
+        this.orden = orden;
+    }
+
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public String getTitulo() { return titulo; }
+    public void setTitulo(String titulo) { this.titulo = titulo; }
+
+    public String getSubtitulo() { return subtitulo; }
+    public void setSubtitulo(String subtitulo) { this.subtitulo = subtitulo; }
+
+    public String getImagenUrl() { return imagenUrl; }
+    public void setImagenUrl(String imagenUrl) { this.imagenUrl = imagenUrl; }
+
+    public String getLink() { return link; }
+    public void setLink(String link) { this.link = link; }
+
+    public LocalDate getFechaPublicacion() { return fechaPublicacion; }
+    public void setFechaPublicacion(LocalDate fechaPublicacion) { this.fechaPublicacion = fechaPublicacion; }
+
+    public Boolean getActiva() { return activa; }
+    public void setActiva(Boolean activa) { this.activa = activa; }
+
+    public Integer getOrden() { return orden; }
+    public void setOrden(Integer orden) { this.orden = orden; }
 }
