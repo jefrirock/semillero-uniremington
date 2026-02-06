@@ -56,24 +56,38 @@
         </form>
     </div>
 
-    <!-- Grid de Profesores -->
-    <div class="profesores-grid">
-        <div class="profesor-card" th:each="docente : ${docentes}">
-            <div class="profesor-imagen">
-                <img th:if="${docente.imagenUrl}" th:src="@{'/uploads/' + ${docente.imagenUrl}}" alt="Profesor">
-                <div th:unless="${docente.imagenUrl}" class="placeholder">👤</div>
-            </div>
-            <div class="profesor-info">
-                <h3 th:text="${docente.nombre}">Nombre Docente</h3>
-                <p class="area" th:text="${docente.area}">Área</p>
-                <p class="especialidad" th:text="${docente.especialidad}">Especialidad</p>
+    <!-- Grid de Profesores con Efecto Flip Card 3D -->
+    <div class="profesores-grid-flip">
+        <div class="flip-card-profesor" th:each="docente : ${docentes}">
+            <div class="flip-card-inner-profesor">
 
-                <div class="detalle">
-                    <p><strong>📧</strong> <span th:text="${docente.email}">email</span></p>
-                    <p><strong>📱</strong> <span th:text="${docente.telefono}">tel</span></p>
+                <!-- FRENTE DE LA TARJETA -->
+                <div class="flip-card-front-profesor">
+                    <div class="profesor-imagen-flip">
+                        <img th:if="${docente.imagenUrl}" th:src="@{'/uploads/' + ${docente.imagenUrl}}" alt="Profesor">
+                        <div th:unless="${docente.imagenUrl}" class="placeholder-flip">👤</div>
+                    </div>
+                    <div class="profesor-info-front">
+                        <h3 th:text="${docente.nombre}">Nombre Docente</h3>
+                        <p class="area-front" th:text="${docente.area}">Área</p>
+                        <small style="color: #666; font-size: 0.8em;">Pasa el mouse para ver más ↻</small>
+                    </div>
                 </div>
 
-                <span class="badge-exp" th:text="${docente.experienciaAnios} + ' años'">Exp</span>
+                <!-- REVERSO DE LA TARJETA -->
+                <div class="flip-card-back-profesor">
+                    <h3 th:text="${docente.nombre}" style="color: #003366; margin-bottom: 10px; font-size: 1.1em;">Nombre</h3>
+                    <p class="especialidad-back" th:text="${docente.especialidad}">Especialidad</p>
+
+                    <div class="detalle-back">
+                        <p><strong>📧 Email:</strong> <span th:text="${docente.email}">email</span></p>
+                        <p><strong>📱 Teléfono:</strong> <span th:text="${docente.telefono}">tel</span></p>
+                        <p><strong>📍 Área:</strong> <span th:text="${docente.area}">area</span></p>
+                    </div>
+
+                    <span class="badge-exp-back" th:text="${docente.experienciaAnios} + ' años de exp.'">Exp</span>
+                </div>
+
             </div>
         </div>
     </div>
@@ -82,11 +96,194 @@
         <p>No se encontraron docentes.</p>
     </div>
 
+    <style>
+        /* 🔄 GRID DE PROFESORES CON FLIP CARD */
+        .profesores-grid-flip {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 30px;
+            margin-top: 20px;
+            padding: 0 10px;
+        }
+
+        /* Contenedor principal del flip */
+        .flip-card-profesor {
+            background-color: transparent;
+            width: 100%;
+            height: 320px;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+
+        /* Inner container que rota */
+        .flip-card-inner-profesor {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-radius: 15px;
+        }
+
+        /* Efecto hover: rota 180 grados */
+        .flip-card-profesor:hover .flip-card-inner-profesor {
+            transform: rotateY(180deg);
+        }
+
+        /* Frente y reverso: ocupan todo el espacio */
+        .flip-card-front-profesor,
+        .flip-card-back-profesor {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        /* FRENTE: Imagen y nombre */
+        .flip-card-front-profesor {
+            background-color: white;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .profesor-imagen-flip {
+            width: 100%;
+            height: 220px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .profesor-imagen-flip img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: top center;
+            transition: transform 0.3s ease;
+        }
+
+        .flip-card-profesor:hover .profesor-imagen-flip img {
+            transform: scale(1.1);
+        }
+
+        .placeholder-flip {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #003366 0%, #004488 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 5em;
+        }
+
+        .profesor-info-front {
+            padding: 15px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .profesor-info-front h3 {
+            color: #003366;
+            font-size: 1.1em;
+            margin: 0 0 8px 0;
+            font-weight: 600;
+        }
+
+        .area-front {
+            color: #666;
+            font-size: 0.9em;
+            margin: 0;
+        }
+
+        /* REVERSO: Información detallada */
+        .flip-card-back-profesor {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            color: #333;
+            transform: rotateY(180deg);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            border-left: 5px solid #003366;
+        }
+
+        [data-theme="dark"] .flip-card-back-profesor {
+            background: linear-gradient(135deg, #16213e 0%, #1a1a2e 100%);
+            color: #eaeaea;
+            border-left-color: #ffd700;
+        }
+
+        .especialidad-back {
+            color: #003366;
+            font-weight: bold;
+            font-size: 0.95em;
+            margin-bottom: 15px;
+            font-style: italic;
+        }
+
+        [data-theme="dark"] .especialidad-back {
+            color: #ffd700;
+        }
+
+        .detalle-back {
+            background: #f0f4f8;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            width: 100%;
+            text-align: left;
+            font-size: 0.85em;
+        }
+
+        [data-theme="dark"] .detalle-back {
+            background: #0f3460;
+        }
+
+        .detalle-back p {
+            margin: 8px 0;
+            color: #555;
+        }
+
+        [data-theme="dark"] .detalle-back p {
+            color: #eaeaea;
+        }
+
+        .badge-exp-back {
+            display: inline-block;
+            background: #ffd700;
+            color: #003366;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .profesores-grid-flip {
+                grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+                gap: 20px;
+            }
+
+            .flip-card-profesor {
+                height: 300px;
+            }
+        }
+    </style>
+
     <script>
         function mostrarLoginRegistro() {
             document.getElementById('loginRegistro').style.display = 'block';
             document.getElementById('errorLogin').style.display = 'none';
-            // Limpiar campos
             document.getElementById('usuarioRegistro').value = '';
             document.getElementById('passwordRegistro').value = '';
         }
@@ -101,14 +298,12 @@
             const password = document.getElementById('passwordRegistro').value;
 
             if (usuario === 'Admin' && password === '2026') {
-                // Redirigir al formulario de registro
                 window.location.href = '/docentes/nuevo';
             } else {
                 document.getElementById('errorLogin').style.display = 'block';
             }
         }
 
-        // Permitir enviar con Enter
         document.getElementById('passwordRegistro').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 verificarAccesoRegistro();
