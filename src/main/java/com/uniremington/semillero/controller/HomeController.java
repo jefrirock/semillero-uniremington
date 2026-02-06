@@ -8,6 +8,10 @@ import com.uniremington.semillero.service.DocenteService;
 import com.uniremington.semillero.service.EventoService;
 import com.uniremington.semillero.repository.FotoEventoRepository;
 import com.uniremington.semillero.repository.NoticiaRepository;
+import com.uniremington.semillero.model.Proyecto;
+import com.uniremington.semillero.model.FotoProyecto;
+import com.uniremington.semillero.service.ProyectoService;
+import com.uniremington.semillero.repository.FotoProyectoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,6 +32,14 @@ public class HomeController {
 
     @Autowired
     private NoticiaRepository noticiaRepository;
+
+    @Autowired
+    private ProyectoService proyectoService;
+
+    @Autowired
+    private FotoProyectoRepository fotoProyectoRepository;
+
+
 
     @Autowired
     public HomeController(DocenteService docenteService, EventoService eventoService) {
@@ -281,5 +293,168 @@ public class HomeController {
         noticiaRepository.deleteById(id);
         return "redirect:/admin/noticias";
     }
+
+    // ==================== SEMILLERO DE INVESTIGACIÓN ====================
+
+    // Página pública del semillero
+    @GetMapping("/semillero")
+    public String semillero(@RequestParam(required = false) String area,
+                            @RequestParam(required = false) String estado,
+                            Model model) {
+        List<Proyecto> proyectos;
+
+        if (area != null && !area.isEmpty() && estado != null && !estado.isEmpty()) {
+            proyectos = proyectoService.listarPorArea(area);
+            // Filtrar por estado manualmente ya que el método combinado puede no existir
+            proyectos.removeIf(p -> !p.getEstado().equals(estado));
+            model.addAttribute("areaActual", area);
+            model.addAttribute("estadoActual", estado);
+        } else if (area != null && !area.isEmpty()) {
+            proyectos = proyectoService.listarPorArea(area);
+            model.addAttribute("areaActual", area);
+            model.addAttribute("estadoActual", null);
+        } else if (estado != null && !estado.isEmpty()) {
+            proyectos = proyectoService.listarPorEstado(estado);
+            model.addAttribute("areaActual", null);
+            model.addAttribute("estadoActual", estado);
+        } else {
+            proyectos = proyectoService.listarTodos();
+            model.addAttribute("areaActual", null);
+            model.addAttribute("estadoActual", null);
+        }
+
+        model.addAttribute("proyectos", proyectos);
+        return "semillero";
+    }
+
+    // Formulario nuevo proyecto (admin)
+    @GetMapping("/semillero/nuevo")
+    public String formularioProyecto(Model model) {
+        model.addAttribute("proyecto", new Proyecto());
+        return "formulario-proyecto";
+    }
+
+    // Guardar proyecto con imagen principal
+    @PostMapping("/semillero/guardar")
+    public String guardarProyecto(@ModelAttribute Proyecto proyecto,
+                                  @RequestParam("imagenPrincipal") MultipartFile imagenPrincipal,
+                                  @RequestParam(value = "fotosIntegrantes", required = false) MultipartFile[] fotosIntegrantes) {
+        try {
+            String uploadDir = "uploads/";
+            java.io.File dir = new java.io.File(uploadDir);
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
+
+            // Guardar imagen principal
+            if (!imagenPrincipal.isEmpty()) {
+                String fileName = "proyecto_" + System.currentTimeMillis() + "_" + imagenPrincipal.getOriginalFilename();
+                java.nio.file.Path filePath = java.nio.file.Paths.get(uploadDir + fileName);
+                java.nio.file.Files.copy(imagenPrincipal.getInputStream(), filePath);
+                proyecto.setImagenPrincipal(fileName);
+            }
+
+            // Guardar fotos de integrantes (concatenadas)
+            if (fotosIntegrantes != null && fotosIntegrantes.length > 0) {
+                StringBuilder fotosInt = new StringBuilder();
+                for (int i = 0; i < fotosIntegrantes.length; i++) {
+                    MultipartFile foto = fotosIntegrantes[i];
+                    if (!foto.isEmpty()) {
+                        String fileName = "integrante_" + System.currentTimeMillis() + "_" + i + "_" + foto.getOriginalFilename();
+                        java.nio.file.Path filePath = java.nio.file.Paths.get(uploadDir + fileName);
+                        java.nio.file.Files.copy(foto.getInputStream(), filePath);
+                        if (fotosInt.length() > 0) fotosInt.append(",");
+                        fotosInt.append(fileName);
+                    }
+                }
+                proyecto.setFotosIntegrantes(fotosInt.toString());
+            }
+
+            if (proyecto.getFechaInicio() == null) {
+                proyecto.setFechaInicio(LocalDate.now());
+            }
+
+            proyectoService.guardar(proyecto);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "redirect:/semillero/" + proyecto.getId();
+    }
+
+    // Detalle del proyecto con galería
+    @GetMapping("/semillero/{id}")
+    public String detalleProyecto(@PathVariable Long id, Model model) {
+        Proyecto proyecto = proyectoService.buscarPorId(id)
+                .orElseThrow(() -> new RuntimeException("Proyecto no encontrado"));
+        List<FotoProyecto> fotos = fotoProyectoRepository.findByProyectoId(id);
+
+        model.addAttribute("proyecto", proyecto);
+        model.addAttribute("fotos", fotos);
+        model.addAttribute("cantidadFotos", fotos.size());
+
+        // Parsear integrantes y fotos
+        String[] listaIntegrantes = proyecto.getIntegrantes() != null ?
+                proyecto.getIntegrantes().split(",") : new String[0];
+        String[] listaFotosInt = proyecto.getFotosIntegrantes() != null ?
+                proyecto.getFotosIntegrantes().split(",") : new String[0];
+
+        model.addAttribute("listaIntegrantes", listaIntegrantes);
+        model.addAttribute("listaFotosInt", listaFotosInt);
+
+        return "detalle-proyecto";
+    }
+
+    // Agregar fotos al proyecto
+    @PostMapping("/semillero/{id}/fotos")
+    public String agregarFotosProyecto(@PathVariable Long id,
+                                       @RequestParam("fotos") MultipartFile[] fotos) {
+        try {
+            Proyecto proyecto = proyectoService.buscarPorId(id)
+                    .orElseThrow(() -> new RuntimeException("Proyecto no encontrado"));
+
+            String uploadDir = "uploads/";
+            java.io.File dir = new java.io.File(uploadDir);
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
+
+            for (MultipartFile foto : fotos) {
+                if (!foto.isEmpty()) {
+                    String fileName = "proyecto_" + id + "_" + System.currentTimeMillis() + "_" + foto.getOriginalFilename();
+                    java.nio.file.Path filePath = java.nio.file.Paths.get(uploadDir + fileName);
+                    java.nio.file.Files.copy(foto.getInputStream(), filePath);
+
+                    FotoProyecto fotoProyecto = new FotoProyecto();
+                    fotoProyecto.setNombreArchivo(fileName);
+                    fotoProyecto.setProyecto(proyecto);
+                    fotoProyectoRepository.save(fotoProyecto);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "redirect:/semillero/" + id;
+    }
+
+    // Eliminar foto del proyecto
+    @GetMapping("/semillero/fotos/eliminar/{fotoId}")
+    public String eliminarFotoProyecto(@PathVariable Long fotoId) {
+        FotoProyecto foto = fotoProyectoRepository.findById(fotoId)
+                .orElseThrow(() -> new RuntimeException("Foto no encontrada"));
+        Long proyectoId = foto.getProyecto().getId();
+        fotoProyectoRepository.deleteById(fotoId);
+        return "redirect:/semillero/" + proyectoId;
+    }
+
+    // Eliminar proyecto completo
+    @GetMapping("/semillero/eliminar/{id}")
+    public String eliminarProyecto(@PathVariable Long id) {
+        List<FotoProyecto> fotos = fotoProyectoRepository.findByProyectoId(id);
+        fotoProyectoRepository.deleteAll(fotos);
+        proyectoService.eliminar(id);
+        return "redirect:/semillero";
+    }
+
+
 
 }

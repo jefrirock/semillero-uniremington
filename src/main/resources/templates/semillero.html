@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout('Semillero de Investigación', ~{::section})}">
+<section>
+    <!-- Header del Semillero -->
+    <div style="background: linear-gradient(135deg, #003366, #004488); padding: 60px 20px; text-align: center; border-radius: 10px; color: white; margin-bottom: 30px;">
+        <h1 style="font-size: 2.8em; margin-bottom: 15px;">🔬 Semillero de Investigación</h1>
+        <p style="font-size: 1.2em; opacity: 0.9;">Proyectos de investigación y desarrollo de la Universidad</p>
+        <div style="width: 100px; height: 4px; background: #ffd700; margin: 20px auto;"></div>
+    </div>
+
+    <!-- Botón Admin -->
+    <div style="text-align: center; margin-bottom: 30px;">
+        <button onclick="mostrarLoginSemillero()" style="background: #ffd700; color: #003366; padding: 15px 30px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 1em;">
+            ➕ Registrar Nuevo Proyecto
+        </button>
+    </div>
+
+    <!-- Login Admin -->
+    <div id="loginSemillero" style="display: none; max-width: 400px; margin: 20px auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+        <h3 style="color: #003366; text-align: center; margin-bottom: 20px;">🔒 Acceso Administrativo</h3>
+        <div style="margin-bottom: 15px;">
+            <label style="display: block; color: #003366; font-weight: bold; margin-bottom: 5px;">Usuario:</label>
+            <input type="text" id="usuarioSemillero" style="width: 100%; padding: 10px; border: 2px solid #003366; border-radius: 5px;">
+        </div>
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; color: #003366; font-weight: bold; margin-bottom: 5px;">Contraseña:</label>
+            <input type="password" id="passwordSemillero" style="width: 100%; padding: 10px; border: 2px solid #003366; border-radius: 5px;">
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <button onclick="verificarAccesoSemillero()" style="flex: 1; background: #003366; color: white; padding: 12px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">Ingresar</button>
+            <button onclick="cancelarLoginSemillero()" style="flex: 1; background: #666; color: white; padding: 12px; border: none; border-radius: 5px; cursor: pointer;">Cancelar</button>
+        </div>
+        <p id="errorLoginSemillero" style="color: red; text-align: center; margin-top: 15px; display: none;">❌ Credenciales incorrectas</p>
+    </div>
+
+    <!-- Filtros -->
+    <div style="display: flex; justify-content: center; gap: 15px; margin-bottom: 30px; flex-wrap: wrap;">
+        <a th:href="@{/semillero}" th:class="${areaActual == null && estadoActual == null} ? 'filtro-activo' : 'filtro-inactivo'" class="filtro-btn">Todos</a>
+        <a th:href="@{/semillero(area='Ingeniería')}" th:class="${areaActual == 'Ingeniería'} ? 'filtro-activo' : 'filtro-inactivo'" class="filtro-btn">Ingeniería</a>
+        <a th:href="@{/semillero(area='Salud')}" th:class="${areaActual == 'Salud'} ? 'filtro-activo' : 'filtro-inactivo'" class="filtro-btn">Salud</a>
+        <a th:href="@{/semillero(area='Sociales')}" th:class="${areaActual == 'Sociales'} ? 'filtro-activo' : 'filtro-inactivo'" class="filtro-btn">Sociales</a>
+        <a th:href="@{/semillero(area='Ambiental')}" th:class="${areaActual == 'Ambiental'} ? 'filtro-activo' : 'filtro-inactivo'" class="filtro-btn">Ambiental</a>
+    </div>
+
+    <!-- Grid de Proyectos con Flip Card -->
+    <div class="proyectos-grid">
+        <div class="flip-card-proyecto" th:each="proyecto : ${proyectos}">
+            <div class="flip-card-inner-proyecto">
+
+                <!-- FRENTE -->
+                <div class="flip-card-front-proyecto">
+                    <div class="proyecto-imagen">
+                        <img th:if="${proyecto.imagenPrincipal}" th:src="@{'/uploads/' + ${proyecto.imagenPrincipal}}" alt="Proyecto">
+                        <div th:unless="${proyecto.imagenPrincipal}" class="placeholder-proyecto">🔬</div>
+                    </div>
+                    <div class="proyecto-info-front">
+                        <span class="badge-area" th:text="${proyecto.area}">Área</span>
+                        <h3 th:text="${proyecto.titulo}">Título</h3>
+                        <span class="badge-estado" th:class="'estado-' + ${proyecto.estado}" th:text="${proyecto.estado}">Estado</span>
+                        <small style="color: #666; display: block; margin-top: 10px;">↻ Pasa el mouse para ver más</small>
+                    </div>
+                </div>
+
+                <!-- REVERSO -->
+                <div class="flip-card-back-proyecto">
+                    <h3 th:text="${proyecto.titulo}" style="color: #003366; margin-bottom: 10px; font-size: 1.1em;">Título</h3>
+                    <p style="color: #555; font-size: 0.9em; margin-bottom: 15px;" th:text="${#strings.abbreviate(proyecto.descripcion, 80)}">Descripción...</p>
+
+                    <div class="info-back">
+                        <p><strong>📅 Inicio:</strong> <span th:text="${proyecto.fechaInicio}">Fecha</span></p>
+                        <p><strong>👥 Integrantes:</strong> <span th:text="${proyecto.integrantes}">Integrantes</span></p>
+                    </div>
+
+                    <a th:href="@{/semillero/{id}(id=${proyecto.id})}" class="btn-ver-mas">Ver Proyecto →</a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div th:if="${#lists.isEmpty(proyectos)}" style="text-align: center; padding: 60px; color: #666;">
+        <p style="font-size: 1.2em;">No hay proyectos registrados en esta categoría.</p>
+    </div>
+
+    <style>
+        .filtro-btn {
+            padding: 10px 25px;
+            border: 2px solid #003366;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .filtro-activo {
+            background: #003366;
+            color: white;
+        }
+
+        .filtro-inactivo {
+            background: transparent;
+            color: #003366;
+        }
+
+        .filtro-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        /* Grid y Flip Cards */
+        .proyectos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+            padding: 0 10px;
+        }
+
+        .flip-card-proyecto {
+            background-color: transparent;
+            width: 100%;
+            height: 380px;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+
+        .flip-card-inner-proyecto {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-radius: 15px;
+        }
+
+        .flip-card-proyecto:hover .flip-card-inner-proyecto {
+            transform: rotateY(180deg);
+        }
+
+        .flip-card-front-proyecto, .flip-card-back-proyecto {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        /* Frente */
+        .flip-card-front-proyecto {
+            background-color: white;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .proyecto-imagen {
+            width: 100%;
+            height: 220px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .proyecto-imagen img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+        .flip-card-proyecto:hover .proyecto-imagen img {
+            transform: scale(1.1);
+        }
+
+        .placeholder-proyecto {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #003366 0%, #004488 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 5em;
+        }
+
+        .proyecto-info-front {
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .proyecto-info-front h3 {
+            color: #003366;
+            margin: 10px 0;
+            font-size: 1.2em;
+        }
+
+        .badge-area {
+            background: #ffd700;
+            color: #003366;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .badge-estado {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        .estado-Activo { background: #28a745; color: white; }
+        .estado-Finalizado { background: #6c757d; color: white; }
+        .estado-En\ progreso { background: #ffc107; color: #003366; }
+
+        /* Reverso */
+        .flip-card-back-proyecto {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            color: #333;
+            transform: rotateY(180deg);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 25px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            border-left: 5px solid #003366;
+        }
+
+        [data-theme="dark"] .flip-card-back-proyecto {
+            background: linear-gradient(135deg, #16213e 0%, #1a1a2e 100%);
+            color: #eaeaea;
+            border-left-color: #ffd700;
+        }
+
+        .info-back {
+            background: #f0f4f8;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            width: 100%;
+            text-align: left;
+            font-size: 0.85em;
+        }
+
+        [data-theme="dark"] .info-back {
+            background: #0f3460;
+        }
+
+        .info-back p {
+            margin: 8px 0;
+        }
+
+        .btn-ver-mas {
+            background: #003366;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn-ver-mas:hover {
+            background: #ffd700;
+            color: #003366;
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 768px) {
+            .proyectos-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+
+    <script>
+        function mostrarLoginSemillero() {
+            document.getElementById('loginSemillero').style.display = 'block';
+            document.getElementById('errorLoginSemillero').style.display = 'none';
+            document.getElementById('usuarioSemillero').value = '';
+            document.getElementById('passwordSemillero').value = '';
+        }
+
+        function cancelarLoginSemillero() {
+            document.getElementById('loginSemillero').style.display = 'none';
+        }
+
+        function verificarAccesoSemillero() {
+            const usuario = document.getElementById('usuarioSemillero').value;
+            const password = document.getElementById('passwordSemillero').value;
+
+            if (usuario === 'Admin' && password === '2026') {
+                window.location.href = '/semillero/nuevo';
+            } else {
+                document.getElementById('errorLoginSemillero').style.display = 'block';
+            }
+        }
+
+        document.getElementById('passwordSemillero').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                verificarAccesoSemillero();
+            }
+        });
+    </script>
+</section>
+</html>

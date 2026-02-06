@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout('Detalle Proyecto', ~{::section})}">
+<section style="max-width: 1200px; margin: 0 auto;">
+
+    <!-- Header del Proyecto -->
+    <div style="background: linear-gradient(135deg, #003366, #004488); color: white; padding: 40px; border-radius: 10px; margin-bottom: 30px; position: relative;">
+        <span th:text="${proyecto.area}" style="background: #ffd700; color: #003366; padding: 5px 15px; border-radius: 20px; font-size: 0.9em; font-weight: bold; text-transform: uppercase;">Área</span>
+        <h1 style="margin: 15px 0 10px 0; font-size: 2.2em;" th:text="${proyecto.titulo}">Título</h1>
+        <p style="opacity: 0.9; font-size: 1.1em;" th:text="${proyecto.descripcion}">Descripción</p>
+
+        <div style="margin-top: 20px; display: flex; gap: 20px; flex-wrap: wrap;">
+            <span style="background: rgba(255,255,255,0.2); padding: 8px 15px; border-radius: 20px;">
+                📅 Inicio: <span th:text="${proyecto.fechaInicio}">Fecha</span>
+            </span>
+            <span th:if="${proyecto.fechaFin}" style="background: rgba(255,255,255,0.2); padding: 8px 15px; border-radius: 20px;">
+                🏁 Fin: <span th:text="${proyecto.fechaFin}">Fecha</span>
+            </span>
+            <span th:class="'estado-badge estado-' + ${proyecto.estado}" th:text="${proyecto.estado}">Estado</span>
+        </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 30px;">
+
+        <!-- Columna Principal -->
+        <div>
+            <!-- Imagen Principal -->
+            <div style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 30px;">
+                <img th:if="${proyecto.imagenPrincipal}" th:src="@{'/uploads/' + ${proyecto.imagenPrincipal}}" style="width: 100%; border-radius: 10px; max-height: 400px; object-fit: cover;">
+                <div th:unless="${proyecto.imagenPrincipal}" style="width: 100%; height: 300px; background: #f0f0f0; display: flex; align-items: center; justify-content: center; border-radius: 10px; font-size: 5em;">🔬</div>
+            </div>
+
+            <!-- Objetivos -->
+            <div style="background: white; padding: 25px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 30px;">
+                <h3 style="color: #003366; margin-bottom: 15px;">🎯 Objetivos</h3>
+                <p style="color: #555; line-height: 1.6;" th:text="${proyecto.objetivos} ?: 'No especificados'">Objetivos...</p>
+            </div>
+
+            <!-- Resultados -->
+            <div th:if="${proyecto.resultados}" style="background: white; padding: 25px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 30px;">
+                <h3 style="color: #003366; margin-bottom: 15px;">🏆 Resultados</h3>
+                <p style="color: #555; line-height: 1.6;" th:text="${proyecto.resultados}">Resultados...</p>
+            </div>
+
+            <!-- Galería de Fotos -->
+            <div style="background: white; padding: 25px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 30px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3 style="color: #003366; margin: 0;">🖼️ Galería (<span th:text="${cantidadFotos}">0</span>)</h3>
+
+                    <!-- Formulario para agregar fotos (Admin) -->
+                    <details style="background: #f0f4f8; border-radius: 5px;">
+                        <summary style="padding: 10px 15px; cursor: pointer; color: #003366; font-weight: bold; list-style: none;">➕ Agregar Fotos</summary>
+                        <div style="padding: 15px; border-top: 1px solid #ddd;">
+                            <form th:action="@{/semillero/{id}/fotos(id=${proyecto.id})}" method="post" enctype="multipart/form-data">
+                                <input type="file" name="fotos" multiple accept="image/*" required style="margin-bottom: 10px;">
+                                <button type="submit" style="background: #003366; color: white; padding: 8px 20px; border: none; border-radius: 5px; cursor: pointer;">Subir</button>
+                            </form>
+                        </div>
+                    </details>
+                </div>
+
+                <div th:if="${#lists.isEmpty(fotos)}" style="text-align: center; padding: 40px; color: #666; background: #f8f9fa; border-radius: 10px;">
+                    <p>No hay fotos adicionales.</p>
+                </div>
+
+                <div th:unless="${#lists.isEmpty(fotos)}" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px;">
+                    <div th:each="foto : ${fotos}" style="position: relative; aspect-ratio: 1; cursor: pointer; border-radius: 8px; overflow: hidden;" th:onclick="'abrirGaleria(this)'" th:data-src="@{'/uploads/' + ${foto.nombreArchivo}}">
+                        <img th:src="@{'/uploads/' + ${foto.nombreArchivo}}" style="width: 100%; height: 100%; object-fit: cover;">
+                        <a th:href="@{/semillero/fotos/eliminar/{id}(id=${foto.id})}" onclick="event.stopPropagation(); return confirm('¿Eliminar?');" style="position: absolute; top: 5px; right: 5px; background: rgba(220,53,69,0.9); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 12px;">×</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar: Integrantes -->
+        <div>
+            <div style="background: white; padding: 25px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                <h3 style="color: #003366; margin-bottom: 20px;">👥 Integrantes</h3>
+
+                <div th:if="${#lists.isEmpty(listaIntegrantes)}" style="text-align: center; color: #666; padding: 20px;">
+                    <p>No hay integrantes registrados.</p>
+                </div>
+
+                <div th:unless="${#lists.isEmpty(listaIntegrantes)}" style="display: flex; flex-direction: column; gap: 15px;">
+                    <div th:each="integrante, iterStat : ${listaIntegrantes}" style="display: flex; align-items: center; gap: 15px; padding: 10px; background: #f8f9fa; border-radius: 10px;">
+                        <div style="width: 60px; height: 60px; border-radius: 50%; overflow: hidden; flex-shrink: 0;">
+                            <img th:if="${iterStat.index < #lists.size(listaFotosInt) && listaFotosInt[iterStat.index] != null}"
+                                 th:src="@{'/uploads/' + ${listaFotosInt[iterStat.index]}}"
+                                 style="width: 100%; height: 100%; object-fit: cover;">
+                            <div th:unless="${iterStat.index < #lists.size(listaFotosInt) && listaFotosInt[iterStat.index] != null}"
+                                 style="width: 100%; height: 100%; background: #003366; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5em;">👤</div>
+                        </div>
+                        <span style="font-weight: 500; color: #333;" th:text="${#strings.trim(integrante)}">Nombre</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Acciones Admin -->
+            <div style="background: white; padding: 25px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-top: 20px;">
+                <h3 style="color: #003366; margin-bottom: 15px;">⚙️ Acciones</h3>
+                <a th:href="@{/semillero/eliminar/{id}(id=${proyecto.id})}" onclick="return confirm('¿Eliminar este proyecto y todas sus fotos?');" style="display: block; background: #dc3545; color: white; padding: 12px; text-align: center; border-radius: 5px; text-decoration: none; font-weight: bold;">🗑️ Eliminar Proyecto</a>
+            </div>
+        </div>
+    </div>
+
+    <div style="margin-top: 30px; text-align: center;">
+        <a th:href="@{/semillero}" style="display: inline-block; background: #003366; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; font-weight: bold;">← Volver al Semillero</a>
+    </div>
+
+    <!-- Lightbox -->
+    <div id="lightbox" style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.95);" onclick="cerrarGaleria(event)">
+        <span style="position: absolute; top: 20px; right: 30px; color: white; font-size: 40px; cursor: pointer;">&times;</span>
+        <div style="display: flex; align-items: center; justify-content: center; height: 100%; padding: 50px;">
+            <img id="imagenLightbox" src="" style="max-width: 90%; max-height: 90%; object-fit: contain; border-radius: 5px;">
+        </div>
+    </div>
+
+    <style>
+        .estado-badge {
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+        .estado-Activo { background: #28a745; color: white; }
+        .estado-Finalizado { background: #6c757d; color: white; }
+        .estado-En\ progreso { background: #ffc107; color: #003366; }
+    </style>
+
+    <script>
+        function abrirGaleria(elemento) {
+            const src = elemento.getAttribute('data-src');
+            document.getElementById('imagenLightbox').src = src;
+            document.getElementById('lightbox').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function cerrarGaleria(event) {
+            if (event.target.id === 'lightbox' || event.target.innerText === '×') {
+                document.getElementById('lightbox').style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        }
+    </script>
+</section>
+</html>
