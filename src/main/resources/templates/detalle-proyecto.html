@@ -9,10 +9,10 @@
         <p style="opacity: 0.9; font-size: 1.1em;" th:text="${proyecto.descripcion}">Descripción</p>
 
         <div style="margin-top: 20px; display: flex; gap: 20px; flex-wrap: wrap;">
-            <span style="background: rgba(255,255,255,0.2); padding: 8px 15px; border-radius: 20px;">
+            <span th:if="${proyecto.fechaInicio != null}" style="background: rgba(255,255,255,0.2); padding: 8px 15px; border-radius: 20px;">
                 📅 Inicio: <span th:text="${proyecto.fechaInicio}">Fecha</span>
             </span>
-            <span th:if="${proyecto.fechaFin}" style="background: rgba(255,255,255,0.2); padding: 8px 15px; border-radius: 20px;">
+            <span th:if="${proyecto.fechaFin != null}" style="background: rgba(255,255,255,0.2); padding: 8px 15px; border-radius: 20px;">
                 🏁 Fin: <span th:text="${proyecto.fechaFin}">Fecha</span>
             </span>
             <span th:class="'estado-badge estado-' + ${proyecto.estado}" th:text="${proyecto.estado}">Estado</span>
@@ -25,18 +25,18 @@
         <div>
             <!-- Imagen Principal -->
             <div style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 30px;">
-                <img th:if="${proyecto.imagenPrincipal}" th:src="@{'/uploads/' + ${proyecto.imagenPrincipal}}" style="width: 100%; border-radius: 10px; max-height: 400px; object-fit: cover;">
-                <div th:unless="${proyecto.imagenPrincipal}" style="width: 100%; height: 300px; background: #f0f0f0; display: flex; align-items: center; justify-content: center; border-radius: 10px; font-size: 5em;">🔬</div>
+                <img th:if="${proyecto.imagenPrincipal != null}" th:src="@{'/uploads/' + ${proyecto.imagenPrincipal}}" style="width: 100%; border-radius: 10px; max-height: 400px; object-fit: cover;">
+                <div th:unless="${proyecto.imagenPrincipal != null}" style="width: 100%; height: 300px; background: #f0f0f0; display: flex; align-items: center; justify-content: center; border-radius: 10px; font-size: 5em;">🔬</div>
             </div>
 
             <!-- Objetivos -->
-            <div style="background: white; padding: 25px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 30px;">
+            <div th:if="${proyecto.objetivos != null && !proyecto.objetivos.isEmpty()}" style="background: white; padding: 25px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 30px;">
                 <h3 style="color: #003366; margin-bottom: 15px;">🎯 Objetivos</h3>
-                <p style="color: #555; line-height: 1.6;" th:text="${proyecto.objetivos} ?: 'No especificados'">Objetivos...</p>
+                <p style="color: #555; line-height: 1.6;" th:text="${proyecto.objetivos}">Objetivos...</p>
             </div>
 
             <!-- Resultados -->
-            <div th:if="${proyecto.resultados}" style="background: white; padding: 25px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 30px;">
+            <div th:if="${proyecto.resultados != null && !proyecto.resultados.isEmpty()}" style="background: white; padding: 25px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 30px;">
                 <h3 style="color: #003366; margin-bottom: 15px;">🏆 Resultados</h3>
                 <p style="color: #555; line-height: 1.6;" th:text="${proyecto.resultados}">Resultados...</p>
             </div>
@@ -46,16 +46,28 @@
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                     <h3 style="color: #003366; margin: 0;">🖼️ Galería (<span th:text="${cantidadFotos}">0</span>)</h3>
 
-                    <!-- Formulario para agregar fotos (Admin) -->
-                    <details style="background: #f0f4f8; border-radius: 5px;">
-                        <summary style="padding: 10px 15px; cursor: pointer; color: #003366; font-weight: bold; list-style: none;">➕ Agregar Fotos</summary>
-                        <div style="padding: 15px; border-top: 1px solid #ddd;">
-                            <form th:action="@{/semillero/{id}/fotos(id=${proyecto.id})}" method="post" enctype="multipart/form-data">
-                                <input type="file" name="fotos" multiple accept="image/*" required style="margin-bottom: 10px;">
-                                <button type="submit" style="background: #003366; color: white; padding: 8px 20px; border: none; border-radius: 5px; cursor: pointer;">Subir</button>
-                            </form>
-                        </div>
-                    </details>
+                    <!-- Botón Admin para agregar fotos -->
+                    <button onclick="mostrarLoginAdmin()" style="background: #003366; color: white; padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer; font-size: 0.9em;">➕ Agregar Fotos</button>
+                </div>
+
+                <!-- Login Admin (oculto) -->
+                <div id="loginAdmin" style="display: none; background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                    <h4 style="color: #003366; margin-bottom: 15px;">🔒 Acceso Administrativo</h4>
+                    <input type="text" id="adminUser" placeholder="Usuario" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 2px solid #003366; border-radius: 5px;">
+                    <input type="password" id="adminPass" placeholder="Contraseña" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 2px solid #003366; border-radius: 5px;">
+                    <div style="display: flex; gap: 10px;">
+                        <button onclick="verificarAdmin()" style="flex: 1; background: #003366; color: white; padding: 10px; border: none; border-radius: 5px; cursor: pointer;">Ingresar</button>
+                        <button onclick="cancelarAdmin()" style="flex: 1; background: #666; color: white; padding: 10px; border: none; border-radius: 5px; cursor: pointer;">Cancelar</button>
+                    </div>
+                    <p id="errorAdmin" style="color: red; margin-top: 10px; display: none;">❌ Credenciales incorrectas</p>
+                </div>
+
+                <!-- Formulario para agregar fotos (oculto hasta login) -->
+                <div id="formFotos" style="display: none; padding: 15px; border-top: 1px solid #ddd;">
+                    <form th:action="@{/semillero/{id}/fotos(id=${proyecto.id})}" method="post" enctype="multipart/form-data">
+                        <input type="file" name="fotos" multiple accept="image/*" required style="margin-bottom: 10px;">
+                        <button type="submit" style="background: #28a745; color: white; padding: 8px 20px; border: none; border-radius: 5px; cursor: pointer;">Subir Fotos</button>
+                    </form>
                 </div>
 
                 <div th:if="${#lists.isEmpty(fotos)}" style="text-align: center; padding: 40px; color: #666; background: #f8f9fa; border-radius: 10px;">
@@ -63,9 +75,8 @@
                 </div>
 
                 <div th:unless="${#lists.isEmpty(fotos)}" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px;">
-                    <div th:each="foto : ${fotos}" style="position: relative; aspect-ratio: 1; cursor: pointer; border-radius: 8px; overflow: hidden;" th:onclick="'abrirGaleria(this)'" th:data-src="@{'/uploads/' + ${foto.nombreArchivo}}">
+                    <div th:each="foto : ${fotos}" style="position: relative; aspect-ratio: 1; cursor: pointer; border-radius: 8px; overflow: hidden;" onclick="abrirGaleria(this)" th:data-src="@{'/uploads/' + ${foto.nombreArchivo}}">
                         <img th:src="@{'/uploads/' + ${foto.nombreArchivo}}" style="width: 100%; height: 100%; object-fit: cover;">
-                        <a th:href="@{/semillero/fotos/eliminar/{id}(id=${foto.id})}" onclick="event.stopPropagation(); return confirm('¿Eliminar?');" style="position: absolute; top: 5px; right: 5px; background: rgba(220,53,69,0.9); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 12px;">×</a>
                     </div>
                 </div>
             </div>
@@ -83,10 +94,10 @@
                 <div th:unless="${#lists.isEmpty(listaIntegrantes)}" style="display: flex; flex-direction: column; gap: 15px;">
                     <div th:each="integrante, iterStat : ${listaIntegrantes}" style="display: flex; align-items: center; gap: 15px; padding: 10px; background: #f8f9fa; border-radius: 10px;">
                         <div style="width: 60px; height: 60px; border-radius: 50%; overflow: hidden; flex-shrink: 0;">
-                            <img th:if="${iterStat.index < #lists.size(listaFotosInt) && listaFotosInt[iterStat.index] != null}"
+                            <img th:if="${iterStat.index < #lists.size(listaFotosInt) && listaFotosInt[iterStat.index] != null && !listaFotosInt[iterStat.index].isEmpty()}"
                                  th:src="@{'/uploads/' + ${listaFotosInt[iterStat.index]}}"
                                  style="width: 100%; height: 100%; object-fit: cover;">
-                            <div th:unless="${iterStat.index < #lists.size(listaFotosInt) && listaFotosInt[iterStat.index] != null}"
+                            <div th:unless="${iterStat.index < #lists.size(listaFotosInt) && listaFotosInt[iterStat.index] != null && !listaFotosInt[iterStat.index].isEmpty()}"
                                  style="width: 100%; height: 100%; background: #003366; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5em;">👤</div>
                         </div>
                         <span style="font-weight: 500; color: #333;" th:text="${#strings.trim(integrante)}">Nombre</span>
@@ -96,8 +107,27 @@
 
             <!-- Acciones Admin -->
             <div style="background: white; padding: 25px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-top: 20px;">
-                <h3 style="color: #003366; margin-bottom: 15px;">⚙️ Acciones</h3>
-                <a th:href="@{/semillero/eliminar/{id}(id=${proyecto.id})}" onclick="return confirm('¿Eliminar este proyecto y todas sus fotos?');" style="display: block; background: #dc3545; color: white; padding: 12px; text-align: center; border-radius: 5px; text-decoration: none; font-weight: bold;">🗑️ Eliminar Proyecto</a>
+                <h3 style="color: #003366; margin-bottom: 15px;">⚙️ Acciones Administrativas</h3>
+
+                <button onclick="mostrarLoginEliminar()" style="width: 100%; background: #dc3545; color: white; padding: 12px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin-bottom: 10px;">
+                    🗑️ Eliminar Proyecto
+                </button>
+
+                <!-- Login para eliminar (oculto) -->
+                <div id="loginEliminar" style="display: none; margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 5px;">
+                    <input type="text" id="eliminarUser" placeholder="Usuario" style="width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid #ddd; border-radius: 3px;">
+                    <input type="password" id="eliminarPass" placeholder="Contraseña" style="width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid #ddd; border-radius: 3px;">
+                    <div style="display: flex; gap: 5px;">
+                        <button onclick="verificarEliminar()" style="flex: 1; background: #dc3545; color: white; padding: 8px; border: none; border-radius: 3px; cursor: pointer;">Confirmar</button>
+                        <button onclick="cancelarEliminar()" style="flex: 1; background: #666; color: white; padding: 8px; border: none; border-radius: 3px; cursor: pointer;">Cancelar</button>
+                    </div>
+                    <p id="errorEliminar" style="color: red; margin-top: 8px; font-size: 0.9em; display: none;">❌ Credenciales incorrectas</p>
+                </div>
+
+                <!-- Formulario oculto para eliminar -->
+                <form id="formEliminar" th:action="@{/semillero/eliminar/{id}(id=${proyecto.id})}" method="get" style="display: none;">
+                    <button type="submit" id="btnConfirmarEliminar"></button>
+                </form>
             </div>
         </div>
     </div>
@@ -126,6 +156,53 @@
     </style>
 
     <script>
+        // Login Admin para agregar fotos
+        function mostrarLoginAdmin() {
+            document.getElementById('loginAdmin').style.display = 'block';
+            document.getElementById('formFotos').style.display = 'none';
+        }
+
+        function cancelarAdmin() {
+            document.getElementById('loginAdmin').style.display = 'none';
+            document.getElementById('errorAdmin').style.display = 'none';
+        }
+
+        function verificarAdmin() {
+            const user = document.getElementById('adminUser').value;
+            const pass = document.getElementById('adminPass').value;
+
+            if (user === 'Admin' && pass === '2026') {
+                document.getElementById('loginAdmin').style.display = 'none';
+                document.getElementById('formFotos').style.display = 'block';
+            } else {
+                document.getElementById('errorAdmin').style.display = 'block';
+            }
+        }
+
+        // Login Admin para eliminar
+        function mostrarLoginEliminar() {
+            document.getElementById('loginEliminar').style.display = 'block';
+        }
+
+        function cancelarEliminar() {
+            document.getElementById('loginEliminar').style.display = 'none';
+            document.getElementById('errorEliminar').style.display = 'none';
+        }
+
+        function verificarEliminar() {
+            const user = document.getElementById('eliminarUser').value;
+            const pass = document.getElementById('eliminarPass').value;
+
+            if (user === 'Admin' && pass === '2026') {
+                if (confirm('¿Estás seguro de eliminar este proyecto permanentemente?')) {
+                    document.getElementById('btnConfirmarEliminar').click();
+                }
+            } else {
+                document.getElementById('errorEliminar').style.display = 'block';
+            }
+        }
+
+        // Lightbox
         function abrirGaleria(elemento) {
             const src = elemento.getAttribute('data-src');
             document.getElementById('imagenLightbox').src = src;

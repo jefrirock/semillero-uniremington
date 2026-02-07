@@ -5,8 +5,10 @@ import com.uniremington.semillero.model.Evento;
 import com.uniremington.semillero.model.Noticia;
 import com.uniremington.semillero.repository.FotoEventoRepository;
 import com.uniremington.semillero.repository.NoticiaRepository;
+import com.uniremington.semillero.repository.FotoProyectoRepository; // NUEVO
 import com.uniremington.semillero.service.DocenteService;
 import com.uniremington.semillero.service.EventoService;
+import com.uniremington.semillero.service.ProyectoService; // NUEVO
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +43,13 @@ public class HomeControllerTest {
 
     @MockBean
     private FotoEventoRepository fotoEventoRepository;
+
+    // NUEVOS MOCKS PARA SEMILLERO
+    @MockBean
+    private ProyectoService proyectoService;
+
+    @MockBean
+    private FotoProyectoRepository fotoProyectoRepository;
 
     @Test
     @DisplayName("Debe cargar la página de inicio")

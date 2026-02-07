@@ -6,14 +6,17 @@
         <p style="margin: 10px 0 0 0; opacity: 0.9;">Semillero de Investigación</p>
     </div>
 
+    <!-- Mensaje de error -->
+    <div th:if="${error}" style="background: #dc3545; color: white; padding: 15px; border-radius: 5px; margin: 20px 0; text-align: center;" th:text="${error}"></div>
+
     <div style="background: white; padding: 40px; border-radius: 0 0 10px 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-        <form th:action="@{/semillero/guardar}" th:object="${proyecto}" method="post" enctype="multipart/form-data">
+        <form th:action="@{/semillero/guardar}" method="post" enctype="multipart/form-data">
 
             <!-- Imagen Principal -->
             <div style="margin-bottom: 25px; text-align: center;">
                 <label style="display: block; color: #003366; font-weight: bold; margin-bottom: 8px;">📷 Imagen del Proyecto</label>
                 <div style="border: 2px dashed #003366; border-radius: 10px; padding: 20px; background: #f8f9fa;">
-                    <input type="file" name="imagenPrincipal" accept="image/*" id="imagenInput" style="display: none;" onchange="previewImage(this)" required>
+                    <input type="file" name="imagenPrincipal" accept="image/*" id="imagenInput" style="display: none;" onchange="previewImage(this)">
                     <label for="imagenInput" style="cursor: pointer; display: block;">
                         <div id="preview" style="width: 100%; max-width: 400px; height: 250px; background: #ddd; margin: 0 auto; display: flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 10px;">
                             <span style="font-size: 4em;">🔬</span>
@@ -26,14 +29,14 @@
             <!-- Título -->
             <div style="margin-bottom: 20px;">
                 <label style="display: block; color: #003366; font-weight: bold; margin-bottom: 8px;">Título del Proyecto *</label>
-                <input type="text" th:field="*{titulo}" required style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 5px; font-size: 16px;">
+                <input type="text" name="titulo" required style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 5px; font-size: 16px;">
             </div>
 
             <!-- Área y Estado -->
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
                 <div>
                     <label style="display: block; color: #003366; font-weight: bold; margin-bottom: 8px;">Área *</label>
-                    <select th:field="*{area}" required style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 5px; font-size: 16px;">
+                    <select name="area" required style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 5px; font-size: 16px;">
                         <option value="Ingeniería">Ingeniería</option>
                         <option value="Salud">Salud</option>
                         <option value="Sociales">Ciencias Sociales</option>
@@ -44,7 +47,7 @@
                 </div>
                 <div>
                     <label style="display: block; color: #003366; font-weight: bold; margin-bottom: 8px;">Estado *</label>
-                    <select th:field="*{estado}" required style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 5px; font-size: 16px;">
+                    <select name="estado" required style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 5px; font-size: 16px;">
                         <option value="En progreso">En progreso</option>
                         <option value="Activo">Activo</option>
                         <option value="Finalizado">Finalizado</option>
@@ -55,19 +58,19 @@
             <!-- Descripción -->
             <div style="margin-bottom: 20px;">
                 <label style="display: block; color: #003366; font-weight: bold; margin-bottom: 8px;">Descripción *</label>
-                <textarea th:field="*{descripcion}" required rows="4" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 5px; font-size: 16px; resize: vertical;"></textarea>
+                <textarea name="descripcion" required rows="4" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 5px; font-size: 16px; resize: vertical;"></textarea>
             </div>
 
             <!-- Objetivos -->
             <div style="margin-bottom: 20px;">
                 <label style="display: block; color: #003366; font-weight: bold; margin-bottom: 8px;">Objetivos</label>
-                <textarea th:field="*{objetivos}" rows="3" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 5px; font-size: 16px; resize: vertical;"></textarea>
+                <textarea name="objetivos" rows="3" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 5px; font-size: 16px; resize: vertical;"></textarea>
             </div>
 
             <!-- Integrantes -->
             <div style="margin-bottom: 20px;">
                 <label style="display: block; color: #003366; font-weight: bold; margin-bottom: 8px;">Integrantes (separados por coma)</label>
-                <input type="text" th:field="*{integrantes}" placeholder="Ej: Juan Pérez, María García, Carlos López" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 5px; font-size: 16px;">
+                <input type="text" name="integrantes" placeholder="Ej: Juan Pérez, María García, Carlos López" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 5px; font-size: 16px;">
             </div>
 
             <!-- Fotos de Integrantes -->
@@ -77,22 +80,22 @@
                 <small style="color: #666;">Selecciona múltiples fotos en el orden de los integrantes</small>
             </div>
 
-            <!-- Fechas -->
+            <!-- Fechas OPCIONALES -->
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
                 <div>
-                    <label style="display: block; color: #003366; font-weight: bold; margin-bottom: 8px;">Fecha de Inicio</label>
-                    <input type="date" th:field="*{fechaInicio}" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 5px; font-size: 16px;">
+                    <label style="display: block; color: #003366; font-weight: bold; margin-bottom: 8px;">Fecha de Inicio (opcional)</label>
+                    <input type="date" name="fechaInicio" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 5px; font-size: 16px;">
                 </div>
                 <div>
                     <label style="display: block; color: #003366; font-weight: bold; margin-bottom: 8px;">Fecha de Finalización (opcional)</label>
-                    <input type="date" th:field="*{fechaFin}" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 5px; font-size: 16px;">
+                    <input type="date" name="fechaFin" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 5px; font-size: 16px;">
                 </div>
             </div>
 
             <!-- Resultados -->
             <div style="margin-bottom: 30px;">
                 <label style="display: block; color: #003366; font-weight: bold; margin-bottom: 8px;">Resultados (si está finalizado)</label>
-                <textarea th:field="*{resultados}" rows="3" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 5px; font-size: 16px; resize: vertical;"></textarea>
+                <textarea name="resultados" rows="3" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 5px; font-size: 16px; resize: vertical;"></textarea>
             </div>
 
             <!-- Botones -->

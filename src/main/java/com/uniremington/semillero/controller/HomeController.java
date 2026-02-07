@@ -39,15 +39,13 @@ public class HomeController {
     @Autowired
     private FotoProyectoRepository fotoProyectoRepository;
 
-
-
     @Autowired
     public HomeController(DocenteService docenteService, EventoService eventoService) {
         this.docenteService = docenteService;
         this.eventoService = eventoService;
     }
 
-    // Página de inicio con carrusel de noticias
+    // ==================== PÁGINA DE INICIO ====================
     @GetMapping("/")
     public String index(Model model) {
         model.addAttribute("docentes", docenteService.listarTodos());
@@ -56,7 +54,7 @@ public class HomeController {
         return "index";
     }
 
-    // Página de docentes con búsqueda
+    // ==================== DOCENTES ====================
     @GetMapping("/docentes")
     public String docentes(@RequestParam(required = false) String busqueda, Model model) {
         if (busqueda != null && !busqueda.isEmpty()) {
@@ -67,14 +65,12 @@ public class HomeController {
         return "docentes";
     }
 
-    // Formulario nuevo docente
     @GetMapping("/docentes/nuevo")
     public String formularioDocente(Model model) {
         model.addAttribute("docente", new Docente());
         return "formulario-docente";
     }
 
-    // Guardar docente con foto
     @PostMapping("/docentes/guardar")
     public String guardarDocente(@ModelAttribute Docente docente,
                                  @RequestParam("foto") MultipartFile foto) {
@@ -99,19 +95,18 @@ public class HomeController {
         return "redirect:/docentes";
     }
 
-    // Página de Programas
+    // ==================== PROGRAMAS Y CONTACTO ====================
     @GetMapping("/programas")
     public String programas() {
         return "programas";
     }
 
-    // Página de Contacto
     @GetMapping("/contacto")
     public String contacto() {
         return "contacto";
     }
 
-    // ✅ EVENTOS CON FILTRO
+    // ==================== EVENTOS ====================
     @GetMapping("/eventos")
     public String eventos(@RequestParam(required = false) String categoria, Model model) {
         List<Evento> eventos;
@@ -128,14 +123,12 @@ public class HomeController {
         return "eventos";
     }
 
-    // Formulario crear evento
     @GetMapping("/eventos/nuevo")
     public String formularioEvento(Model model) {
         model.addAttribute("evento", new Evento());
         return "formulario-evento";
     }
 
-    // Guardar evento
     @PostMapping("/eventos/guardar")
     public String guardarEvento(@ModelAttribute Evento evento,
                                 @RequestParam("imagen") MultipartFile imagen) {
@@ -160,7 +153,6 @@ public class HomeController {
         return "redirect:/eventos/" + evento.getId();
     }
 
-    // ✅ CRUD - EDITAR EVENTO
     @GetMapping("/eventos/editar/{id}")
     public String editarEvento(@PathVariable Long id, Model model) {
         Evento evento = eventoService.buscarPorId(id)
@@ -170,7 +162,6 @@ public class HomeController {
         return "formulario-evento";
     }
 
-    // ✅ CRUD - ACTUALIZAR EVENTO
     @PostMapping("/eventos/actualizar")
     public String actualizarEvento(@ModelAttribute Evento evento,
                                    @RequestParam("imagen") MultipartFile imagen) {
@@ -189,7 +180,6 @@ public class HomeController {
         return "redirect:/eventos/" + evento.getId();
     }
 
-    // ✅ CRUD - ELIMINAR EVENTO
     @GetMapping("/eventos/eliminar/{id}")
     public String eliminarEvento(@PathVariable Long id) {
         List<FotoEvento> fotos = fotoEventoRepository.findByEventoId(id);
@@ -198,7 +188,6 @@ public class HomeController {
         return "redirect:/eventos";
     }
 
-    // ✅ DETALLE EVENTO (Galería de fotos)
     @GetMapping("/eventos/{id}")
     public String detalleEvento(@PathVariable Long id, Model model) {
         Evento evento = eventoService.buscarPorId(id)
@@ -211,7 +200,6 @@ public class HomeController {
         return "detalle-evento";
     }
 
-    // ✅ AGREGAR FOTOS AL EVENTO
     @PostMapping("/eventos/{id}/fotos")
     public String agregarFotosEvento(@PathVariable Long id,
                                      @RequestParam("fotos") MultipartFile[] fotos) {
@@ -243,7 +231,6 @@ public class HomeController {
         return "redirect:/eventos/" + id;
     }
 
-    // ✅ ELIMINAR FOTO INDIVIDUAL
     @GetMapping("/eventos/fotos/eliminar/{fotoId}")
     public String eliminarFoto(@PathVariable Long fotoId) {
         FotoEvento foto = fotoEventoRepository.findById(fotoId)
@@ -253,7 +240,7 @@ public class HomeController {
         return "redirect:/eventos/" + eventoId;
     }
 
-    // ✅ ADMIN NOTICIAS (para el carrusel)
+    // ==================== ADMIN NOTICIAS ====================
     @GetMapping("/admin/noticias")
     public String adminNoticias(Model model) {
         model.addAttribute("noticias", noticiaRepository.findAll());
@@ -261,7 +248,6 @@ public class HomeController {
         return "admin-noticias";
     }
 
-    // ✅ GUARDAR NOTICIA
     @PostMapping("/admin/noticias/guardar")
     public String guardarNoticia(@ModelAttribute Noticia noticia,
                                  @RequestParam("imagen") MultipartFile imagen) {
@@ -287,7 +273,6 @@ public class HomeController {
         return "redirect:/admin/noticias";
     }
 
-    // ✅ ELIMINAR NOTICIA
     @GetMapping("/admin/noticias/eliminar/{id}")
     public String eliminarNoticia(@PathVariable Long id) {
         noticiaRepository.deleteById(id);
@@ -295,8 +280,6 @@ public class HomeController {
     }
 
     // ==================== SEMILLERO DE INVESTIGACIÓN ====================
-
-    // Página pública del semillero
     @GetMapping("/semillero")
     public String semillero(@RequestParam(required = false) String area,
                             @RequestParam(required = false) String estado,
@@ -305,7 +288,6 @@ public class HomeController {
 
         if (area != null && !area.isEmpty() && estado != null && !estado.isEmpty()) {
             proyectos = proyectoService.listarPorArea(area);
-            // Filtrar por estado manualmente ya que el método combinado puede no existir
             proyectos.removeIf(p -> !p.getEstado().equals(estado));
             model.addAttribute("areaActual", area);
             model.addAttribute("estadoActual", estado);
@@ -327,19 +309,47 @@ public class HomeController {
         return "semillero";
     }
 
-    // Formulario nuevo proyecto (admin)
     @GetMapping("/semillero/nuevo")
     public String formularioProyecto(Model model) {
         model.addAttribute("proyecto", new Proyecto());
         return "formulario-proyecto";
     }
 
-    // Guardar proyecto con imagen principal
     @PostMapping("/semillero/guardar")
-    public String guardarProyecto(@ModelAttribute Proyecto proyecto,
-                                  @RequestParam("imagenPrincipal") MultipartFile imagenPrincipal,
-                                  @RequestParam(value = "fotosIntegrantes", required = false) MultipartFile[] fotosIntegrantes) {
+    public String guardarProyecto(@RequestParam String titulo,
+                                  @RequestParam(required = false) String descripcion,
+                                  @RequestParam(required = false) String area,
+                                  @RequestParam(required = false) String estado,
+                                  @RequestParam(required = false) String fechaInicio,
+                                  @RequestParam(required = false) String fechaFin,
+                                  @RequestParam(required = false) String integrantes,
+                                  @RequestParam(required = false) String objetivos,
+                                  @RequestParam(required = false) String resultados,
+                                  @RequestParam(required = false) MultipartFile imagenPrincipal,
+                                  @RequestParam(required = false) MultipartFile[] fotosIntegrantes,
+                                  Model model) {
+
+        Proyecto proyecto = new Proyecto();
+
         try {
+            proyecto.setTitulo(titulo);
+            proyecto.setDescripcion(descripcion);
+            proyecto.setArea(area != null ? area : "Ingeniería");
+            proyecto.setEstado(estado != null ? estado : "En progreso");
+            proyecto.setIntegrantes(integrantes);
+            proyecto.setObjetivos(objetivos);
+            proyecto.setResultados(resultados);
+
+            // Fechas OPCIONALES
+            if (fechaInicio != null && !fechaInicio.isEmpty()) {
+                proyecto.setFechaInicio(LocalDate.parse(fechaInicio));
+            }
+
+            if (fechaFin != null && !fechaFin.isEmpty()) {
+                proyecto.setFechaFin(LocalDate.parse(fechaFin));
+            }
+
+            // Crear carpeta uploads si no existe
             String uploadDir = "uploads/";
             java.io.File dir = new java.io.File(uploadDir);
             if (!dir.exists()) {
@@ -347,19 +357,19 @@ public class HomeController {
             }
 
             // Guardar imagen principal
-            if (!imagenPrincipal.isEmpty()) {
+            if (imagenPrincipal != null && !imagenPrincipal.isEmpty()) {
                 String fileName = "proyecto_" + System.currentTimeMillis() + "_" + imagenPrincipal.getOriginalFilename();
                 java.nio.file.Path filePath = java.nio.file.Paths.get(uploadDir + fileName);
                 java.nio.file.Files.copy(imagenPrincipal.getInputStream(), filePath);
                 proyecto.setImagenPrincipal(fileName);
             }
 
-            // Guardar fotos de integrantes (concatenadas)
+            // Guardar fotos de integrantes
             if (fotosIntegrantes != null && fotosIntegrantes.length > 0) {
                 StringBuilder fotosInt = new StringBuilder();
                 for (int i = 0; i < fotosIntegrantes.length; i++) {
                     MultipartFile foto = fotosIntegrantes[i];
-                    if (!foto.isEmpty()) {
+                    if (foto != null && !foto.isEmpty()) {
                         String fileName = "integrante_" + System.currentTimeMillis() + "_" + i + "_" + foto.getOriginalFilename();
                         java.nio.file.Path filePath = java.nio.file.Paths.get(uploadDir + fileName);
                         java.nio.file.Files.copy(foto.getInputStream(), filePath);
@@ -367,21 +377,24 @@ public class HomeController {
                         fotosInt.append(fileName);
                     }
                 }
-                proyecto.setFotosIntegrantes(fotosInt.toString());
-            }
-
-            if (proyecto.getFechaInicio() == null) {
-                proyecto.setFechaInicio(LocalDate.now());
+                if (fotosInt.length() > 0) {
+                    proyecto.setFotosIntegrantes(fotosInt.toString());
+                }
             }
 
             proyectoService.guardar(proyecto);
+            System.out.println(">>> PROYECTO GUARDADO: ID = " + proyecto.getId());
+
         } catch (Exception e) {
             e.printStackTrace();
+            model.addAttribute("error", "Error al guardar: " + e.getMessage());
+            model.addAttribute("proyecto", proyecto);
+            return "formulario-proyecto";
         }
+
         return "redirect:/semillero/" + proyecto.getId();
     }
 
-    // Detalle del proyecto con galería
     @GetMapping("/semillero/{id}")
     public String detalleProyecto(@PathVariable Long id, Model model) {
         Proyecto proyecto = proyectoService.buscarPorId(id)
@@ -392,10 +405,9 @@ public class HomeController {
         model.addAttribute("fotos", fotos);
         model.addAttribute("cantidadFotos", fotos.size());
 
-        // Parsear integrantes y fotos
-        String[] listaIntegrantes = proyecto.getIntegrantes() != null ?
+        String[] listaIntegrantes = (proyecto.getIntegrantes() != null && !proyecto.getIntegrantes().isEmpty()) ?
                 proyecto.getIntegrantes().split(",") : new String[0];
-        String[] listaFotosInt = proyecto.getFotosIntegrantes() != null ?
+        String[] listaFotosInt = (proyecto.getFotosIntegrantes() != null && !proyecto.getFotosIntegrantes().isEmpty()) ?
                 proyecto.getFotosIntegrantes().split(",") : new String[0];
 
         model.addAttribute("listaIntegrantes", listaIntegrantes);
@@ -404,7 +416,6 @@ public class HomeController {
         return "detalle-proyecto";
     }
 
-    // Agregar fotos al proyecto
     @PostMapping("/semillero/{id}/fotos")
     public String agregarFotosProyecto(@PathVariable Long id,
                                        @RequestParam("fotos") MultipartFile[] fotos) {
@@ -436,25 +447,15 @@ public class HomeController {
         return "redirect:/semillero/" + id;
     }
 
-    // Eliminar foto del proyecto
-    @GetMapping("/semillero/fotos/eliminar/{fotoId}")
-    public String eliminarFotoProyecto(@PathVariable Long fotoId) {
-        FotoProyecto foto = fotoProyectoRepository.findById(fotoId)
-                .orElseThrow(() -> new RuntimeException("Foto no encontrada"));
-        Long proyectoId = foto.getProyecto().getId();
-        fotoProyectoRepository.deleteById(fotoId);
-        return "redirect:/semillero/" + proyectoId;
-    }
-
-    // Eliminar proyecto completo
     @GetMapping("/semillero/eliminar/{id}")
     public String eliminarProyecto(@PathVariable Long id) {
-        List<FotoProyecto> fotos = fotoProyectoRepository.findByProyectoId(id);
-        fotoProyectoRepository.deleteAll(fotos);
-        proyectoService.eliminar(id);
+        try {
+            List<FotoProyecto> fotos = fotoProyectoRepository.findByProyectoId(id);
+            fotoProyectoRepository.deleteAll(fotos);
+            proyectoService.eliminar(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return "redirect:/semillero";
     }
-
-
-
 }
