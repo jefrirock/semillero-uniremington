@@ -250,9 +250,10 @@ public class HomeController {
 
     @PostMapping("/admin/noticias/guardar")
     public String guardarNoticia(@ModelAttribute Noticia noticia,
-                                 @RequestParam("imagen") MultipartFile imagen) {
+                                 @RequestParam(value = "imagen", required = false) MultipartFile imagen) {
         try {
-            if (!imagen.isEmpty()) {
+            // Solo procesar imagen si se envió
+            if (imagen != null && !imagen.isEmpty()) {
                 String uploadDir = "uploads/";
                 java.io.File dir = new java.io.File(uploadDir);
                 if (!dir.exists()) {
@@ -263,9 +264,12 @@ public class HomeController {
                 java.nio.file.Files.copy(imagen.getInputStream(), filePath);
                 noticia.setImagenUrl(fileName);
             }
+
+            // Fecha por defecto
             if (noticia.getFechaPublicacion() == null) {
                 noticia.setFechaPublicacion(LocalDate.now());
             }
+
             noticiaRepository.save(noticia);
         } catch (Exception e) {
             e.printStackTrace();

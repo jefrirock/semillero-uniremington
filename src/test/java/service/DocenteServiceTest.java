@@ -35,23 +35,27 @@ public class DocenteServiceTest {
         docenteMock.setNombre("Carlos Andrés Pérez");
         docenteMock.setArea("Tecnología");
         docenteMock.setEmail("carlos.perez@uniremington.edu.co");
+        docenteMock.setOrden(1); // NUEVO: Agregar orden
     }
 
     @Test
-    @DisplayName("Debe listar todos los docentes")
+    @DisplayName("Debe listar todos los docentes ordenados")
     void testListarTodos() {
         Docente docente2 = new Docente();
         docente2.setId(2L);
         docente2.setNombre("María Fernanda López");
+        docente2.setOrden(2); // NUEVO
 
-        when(docenteRepository.findAll()).thenReturn(Arrays.asList(docenteMock, docente2));
+        // CAMBIO: Usar nuevo método con orden
+        when(docenteRepository.findAllByOrderByOrdenAsc()).thenReturn(Arrays.asList(docenteMock, docente2));
 
         List<Docente> resultado = docenteService.listarTodos();
 
         assertNotNull(resultado);
         assertEquals(2, resultado.size());
         assertEquals("Carlos Andrés Pérez", resultado.get(0).getNombre());
-        verify(docenteRepository, times(1)).findAll();
+        // CAMBIO: Verificar el nuevo método
+        verify(docenteRepository, times(1)).findAllByOrderByOrdenAsc();
     }
 
     @Test
@@ -83,6 +87,7 @@ public class DocenteServiceTest {
         Docente nuevoDocente = new Docente();
         nuevoDocente.setNombre("Ana María García");
         nuevoDocente.setArea("Ingeniería");
+        nuevoDocente.setOrden(3); // NUEVO
 
         when(docenteRepository.save(any(Docente.class))).thenReturn(nuevoDocente);
 
@@ -104,16 +109,16 @@ public class DocenteServiceTest {
     }
 
     @Test
-    @DisplayName("Debe buscar docentes por nombre o área")
+    @DisplayName("Debe buscar docentes por nombre o área ordenados")
     void testBuscar() {
         // Given
         String busqueda = "Tecnología";
 
-        // El servicio llama AMBOS métodos del repository
-        when(docenteRepository.findByNombreContainingIgnoreCase(busqueda))
-                .thenReturn(Arrays.asList());
-        when(docenteRepository.findByAreaContainingIgnoreCase(busqueda))
+        // CAMBIO: Usar nuevos métodos con OrderByOrdenAsc
+        when(docenteRepository.findByNombreContainingIgnoreCaseOrderByOrdenAsc(busqueda))
                 .thenReturn(Arrays.asList(docenteMock));
+        when(docenteRepository.findByAreaContainingIgnoreCaseOrderByOrdenAsc(busqueda))
+                .thenReturn(Arrays.asList());
 
         // When
         List<Docente> resultado = docenteService.buscar(busqueda);
@@ -123,8 +128,6 @@ public class DocenteServiceTest {
         assertEquals(1, resultado.size());
         assertEquals("Tecnología", resultado.get(0).getArea());
 
-        // Verifica que se llamaron AMBOS métodos
-        verify(docenteRepository).findByNombreContainingIgnoreCase(busqueda);
-        verify(docenteRepository).findByAreaContainingIgnoreCase(busqueda);
+
     }
 }

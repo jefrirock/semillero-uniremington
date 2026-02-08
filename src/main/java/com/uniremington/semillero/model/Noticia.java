@@ -18,7 +18,7 @@ public class Noticia {
     private String imagenUrl;
     private String link;
 
-    @Column(nullable = false)
+    // SOLO UNA DECLARACIÓN - Sin @Column(nullable = false)
     private LocalDate fechaPublicacion;
 
     private Boolean activa = true;
@@ -26,18 +26,7 @@ public class Noticia {
 
     public Noticia() {}
 
-    public Noticia(Long id, String titulo, String subtitulo, String imagenUrl,
-                   String link, LocalDate fechaPublicacion, Boolean activa, Integer orden) {
-        this.id = id;
-        this.titulo = titulo;
-        this.subtitulo = subtitulo;
-        this.imagenUrl = imagenUrl;
-        this.link = link;
-        this.fechaPublicacion = fechaPublicacion;
-        this.activa = activa;
-        this.orden = orden;
-    }
-
+    // Getters y Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

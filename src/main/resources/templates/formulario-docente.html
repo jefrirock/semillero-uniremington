@@ -1,77 +1,83 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout('Registrar Docente', ~{::section})}">
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout('Nuevo Docente', ~{::section})}">
 <section style="max-width: 800px; margin: 0 auto;">
     <div style="background: #003366; color: white; padding: 30px; border-radius: 10px 10px 0 0; text-align: center;">
         <h1 style="margin: 0;">Registrar Nuevo Docente</h1>
-        <p style="margin: 10px 0 0 0; opacity: 0.9;">Complete la información del profesor</p>
+        <p style="margin: 10px 0 0 0; opacity: 0.9;">Área Administrativa</p>
     </div>
 
     <div style="background: white; padding: 40px; border-radius: 0 0 10px 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
         <form th:action="@{/docentes/guardar}" th:object="${docente}" method="post" enctype="multipart/form-data">
 
-            <!-- Campo de foto (NUEVO) -->
-            <div style="margin-bottom: 20px; text-align: center;">
-                <label style="display: block; color: #003366; font-weight: bold; margin-bottom: 8px;">Foto del Docente</label>
+            <!-- Foto -->
+            <div style="margin-bottom: 25px; text-align: center;">
+                <label style="display: block; color: #003366; font-weight: bold; margin-bottom: 8px;">📷 Foto del Docente</label>
                 <div style="border: 2px dashed #003366; border-radius: 10px; padding: 20px; background: #f8f9fa;">
-                    <input type="file" name="foto" accept="image/*" id="fotoInput"
-                           style="display: none;" onchange="previewImage(this)">
+                    <input type="file" name="foto" accept="image/*" id="fotoInput" style="display: none;" onchange="previewImage(this)">
                     <label for="fotoInput" style="cursor: pointer; display: block;">
-                        <div id="preview" style="width: 150px; height: 150px; background: #ddd; border-radius: 50%; margin: 0 auto; display: flex; align-items: center; justify-content: center; overflow: hidden;">
-                            <span style="font-size: 3em;">📷</span>
+                        <div id="preview" style="width: 150px; height: 150px; background: #ddd; margin: 0 auto; display: flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 50%;">
+                            <span style="font-size: 3em;">👤</span>
                         </div>
-                        <p style="color: #003366; margin-top: 10px;">Haz clic para seleccionar una foto</p>
+                        <p style="color: #003366; margin-top: 10px;">Haz clic para seleccionar foto</p>
                     </label>
                 </div>
             </div>
 
+            <!-- Nombre -->
             <div style="margin-bottom: 20px;">
                 <label style="display: block; color: #003366; font-weight: bold; margin-bottom: 8px;">Nombre Completo *</label>
-                <input type="text" th:field="*{nombre}" required
-                       style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 5px; font-size: 16px;">
+                <input type="text" th:field="*{nombre}" required style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 5px; font-size: 16px;">
             </div>
 
+            <!-- Área y Especialidad -->
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
                 <div>
                     <label style="display: block; color: #003366; font-weight: bold; margin-bottom: 8px;">Área *</label>
-                    <select th:field="*{area}" required style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 5px; font-size: 16px; background: white;">
+                    <select th:field="*{area}" required style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 5px; font-size: 16px;">
                         <option value="Ingeniería">Ingeniería</option>
-                        <option value="Ciencias Básicas">Ciencias Básicas</option>
                         <option value="Administración">Administración</option>
+                        <option value="Salud">Salud</option>
                         <option value="Idiomas">Idiomas</option>
-                        <option value="Ciencias Sociales">Ciencias Sociales</option>
+                        <option value="Sociales">Ciencias Sociales</option>
                     </select>
                 </div>
                 <div>
                     <label style="display: block; color: #003366; font-weight: bold; margin-bottom: 8px;">Especialidad</label>
-                    <input type="text" th:field="*{especialidad}" placeholder="Ej: Redes, Bases de Datos..."
-                           style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 5px; font-size: 16px;">
+                    <input type="text" th:field="*{especialidad}" placeholder="Ej: Redes, Bases de Datos..." style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 5px; font-size: 16px;">
                 </div>
             </div>
 
+            <!-- Email y Teléfono -->
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
                 <div>
                     <label style="display: block; color: #003366; font-weight: bold; margin-bottom: 8px;">Email</label>
-                    <input type="email" th:field="*{email}" placeholder="correo@uniremington.edu.co"
-                           style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 5px; font-size: 16px;">
+                    <input type="email" th:field="*{email}" placeholder="correo@uniremington.edu.co" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 5px; font-size: 16px;">
                 </div>
                 <div>
                     <label style="display: block; color: #003366; font-weight: bold; margin-bottom: 8px;">Teléfono</label>
-                    <input type="text" th:field="*{telefono}" placeholder="300-000-00-00"
-                           style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 5px; font-size: 16px;">
+                    <input type="text" th:field="*{telefono}" placeholder="300-000-00-00" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 5px; font-size: 16px;">
                 </div>
             </div>
 
-            <div style="margin-bottom: 30px;">
-                <label style="display: block; color: #003366; font-weight: bold; margin-bottom: 8px;">Años de Experiencia</label>
-                <input type="number" th:field="*{experienciaAnios}" min="0" value="0"
-                       style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 5px; font-size: 16px;">
+            <!-- NUEVO: Orden de visualización -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                <div>
+                    <label style="display: block; color: #003366; font-weight: bold; margin-bottom: 8px;">Orden de Visualización *</label>
+                    <input type="number" th:field="*{orden}" min="0" value="0" required style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 5px; font-size: 16px;">
+                    <small style="color: #666;">Número menor = aparece primero (0, 1, 2, 3...)</small>
+                </div>
+                <div>
+                    <label style="display: block; color: #003366; font-weight: bold; margin-bottom: 8px;">Años de Experiencia</label>
+                    <input type="number" th:field="*{experienciaAnios}" min="0" value="0" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 5px; font-size: 16px;">
+                </div>
             </div>
 
+            <!-- Botones -->
             <div style="display: flex; gap: 15px; justify-content: center;">
-                <button type="submit" style="background: #003366; color: white; padding: 12px 40px; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; font-weight: bold;">
+                <button type="submit" style="background: #003366; color: white; padding: 15px 50px; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; font-weight: bold;">
                     💾 Guardar Docente
                 </button>
-                <a th:href="@{/docentes}" style="background: #666; color: white; padding: 12px 40px; border-radius: 5px; text-decoration: none; font-size: 16px; display: inline-block;">
+                <a th:href="@{/docentes}" style="background: #666; color: white; padding: 15px 50px; border-radius: 5px; text-decoration: none; font-size: 16px; display: inline-block;">
                     Cancelar
                 </a>
             </div>
@@ -82,7 +88,7 @@
                 if (input.files && input.files[0]) {
                     var reader = new FileReader();
                     reader.onload = function(e) {
-                        document.getElementById('preview').innerHTML = '<img src="' + e.target.result + '" style="width: 100%; height: 100%; object-fit: cover;">';
+                        document.getElementById('preview').innerHTML = '<img src="' + e.target.result + '" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">';
                     }
                     reader.readAsDataURL(input.files[0]);
                 }

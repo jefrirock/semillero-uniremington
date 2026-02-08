@@ -14,11 +14,13 @@ public class Docente {
     private String nombre;
 
     private String area;
-    private String especialidad;      // <-- AGREGADO
+    private String especialidad;
     private String email;
-    private String telefono;          // <-- AGREGADO
-    private Integer experienciaAnios; // <-- AGREGADO
+    private String telefono;
+    private Integer experienciaAnios;
     private String imagenUrl;
+
+    private Integer orden = 0; // NUEVO: Campo para orden personalizado
 
     public Docente() {}
 
@@ -32,18 +34,22 @@ public class Docente {
     public String getArea() { return area; }
     public void setArea(String area) { this.area = area; }
 
-    public String getEspecialidad() { return especialidad; }      // <-- AGREGADO
+    public String getEspecialidad() { return especialidad; }
     public void setEspecialidad(String especialidad) { this.especialidad = especialidad; }
 
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
 
-    public String getTelefono() { return telefono; }              // <-- AGREGADO
+    public String getTelefono() { return telefono; }
     public void setTelefono(String telefono) { this.telefono = telefono; }
 
-    public Integer getExperienciaAnios() { return experienciaAnios; } // <-- AGREGADO
+    public Integer getExperienciaAnios() { return experienciaAnios; }
     public void setExperienciaAnios(Integer experienciaAnios) { this.experienciaAnios = experienciaAnios; }
 
     public String getImagenUrl() { return imagenUrl; }
     public void setImagenUrl(String imagenUrl) { this.imagenUrl = imagenUrl; }
+
+    // NUEVO
+    public Integer getOrden() { return orden; }
+    public void setOrden(Integer orden) { this.orden = orden; }
 }
