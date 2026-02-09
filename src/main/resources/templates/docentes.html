@@ -1,80 +1,80 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout('Área Administrativa', ~{::section})}">
 <section>
-    <div style="background: linear-gradient(135deg, #004488, #004488); padding: 50px 20px; text-align: center; border-radius: 10px; color: white; margin-bottom: 30px;">
-        <h1 style="font-size: 2.5em; margin-bottom: 10px;">Área Administrativa Y Docentes</h1>
-        <p>Nuestro Equipo de Profesores</p>
+    <!-- BANNER ANIMADO REDUCIDO -->
+    <div class="banner-admin-compacto">
+        <canvas id="particles-admin"></canvas>
+        <div class="ondas-container">
+            <div class="onda onda-1"></div>
+            <div class="onda onda-2"></div>
+            <div class="onda onda-3"></div>
+            <div class="onda onda-4"></div>
+        </div>
+        <div class="luz-brillante"></div>
+
+        <div class="contenido-admin-compacto">
+            <div class="icono-admin-container">
+                <div class="icono-admin">👨‍🏫</div>
+                <div class="anillos-icono"></div>
+            </div>
+            <h1 class="titulo-admin-compacto">Área Administrativa</h1>
+            <p class="subtitulo-admin-compacto">Nuestro Equipo de Profesores</p>
+            <div class="linea-neon-compacto">
+                <div class="punto-luz"></div>
+            </div>
+        </div>
     </div>
 
-    <!-- Botones de acción (NUEVO) -->
-    <div style="text-align: center; margin-bottom: 30px;">
-        <a th:href="@{/docentes}" style="background: #003366; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; display: inline-block; margin: 5px; font-weight: bold;">
+    <!-- Botones -->
+    <div style="text-align: center; margin-bottom: 20px;">
+        <a th:href="@{/docentes}" style="background: #003366; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; display: inline-block; margin: 5px; font-weight: bold;">
             📋 Ver Docentes
         </a>
-        <button onclick="mostrarLoginRegistro()" style="background: #ffd700; color: #003366; padding: 15px 30px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 1em; margin: 5px;">
+        <button onclick="mostrarLoginDocente()" style="background: #ffd700; color: #003366; padding: 12px 25px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 1em; margin: 5px;">
             ➕ Registrar Nuevo Docente
         </button>
     </div>
 
-    <!-- Login para registrar docente (NUEVO - inicialmente oculto) -->
-    <div id="loginRegistro" style="display: none; max-width: 400px; margin: 20px auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+    <!-- Login Admin -->
+    <div id="loginDocente" style="display: none; max-width: 400px; margin: 20px auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
         <h3 style="color: #003366; text-align: center; margin-bottom: 20px;">🔒 Acceso Restringido</h3>
-        <p style="text-align: center; color: #666; margin-bottom: 20px;">Ingrese credenciales para registrar docentes</p>
-
-        <div style="margin-bottom: 15px;">
-            <label style="display: block; color: #003366; font-weight: bold; margin-bottom: 5px;">Usuario:</label>
-            <input type="text" id="usuarioRegistro" style="width: 100%; padding: 10px; border: 2px solid #003366; border-radius: 5px;">
-        </div>
-
-        <div style="margin-bottom: 20px;">
-            <label style="display: block; color: #003366; font-weight: bold; margin-bottom: 5px;">Contraseña:</label>
-            <input type="password" id="passwordRegistro" style="width: 100%; padding: 10px; border: 2px solid #003366; border-radius: 5px;">
-        </div>
-
+        <input type="text" id="usuarioDocente" placeholder="Usuario" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 2px solid #003366; border-radius: 5px;">
+        <input type="password" id="passwordDocente" placeholder="Contraseña" style="width: 100%; padding: 10px; margin-bottom: 15px; border: 2px solid #003366; border-radius: 5px;">
         <div style="display: flex; gap: 10px;">
-            <button onclick="verificarAccesoRegistro()" style="flex: 1; background: #003366; color: white; padding: 12px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">
-                Ingresar
-            </button>
-            <button onclick="cancelarLogin()" style="flex: 1; background: #666; color: white; padding: 12px; border: none; border-radius: 5px; cursor: pointer;">
-                Cancelar
-            </button>
+            <button onclick="verificarDocente()" style="flex: 1; background: #003366; color: white; padding: 12px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">Ingresar</button>
+            <button onclick="cancelarLoginDocente()" style="flex: 1; background: #666; color: white; padding: 12px; border: none; border-radius: 5px; cursor: pointer;">Cancelar</button>
         </div>
-
-        <p id="errorLogin" style="color: red; text-align: center; margin-top: 15px; display: none;">
-            ❌ Usuario o contraseña incorrectos
-        </p>
+        <p id="errorLoginDocente" style="color: red; text-align: center; margin-top: 10px; display: none;">❌ Credenciales incorrectas</p>
     </div>
 
     <!-- Buscador -->
     <div style="margin-bottom: 20px; text-align: center;">
-        <form th:action="@{/docentes}" method="get" style="display: inline-flex; gap: 10px;">
-            <input type="text" name="busqueda" th:value="${param.busqueda}"
-                   placeholder="Buscar docente o Área..."
-                   style="width: 80%; max-width: 300px; padding: 10px; border: 2px solid #003366; border-radius: 25px; font-size: 14px; outline: none;">
+        <form th:action="@{/docentes}" method="get" style="display: inline-flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
+            <input type="text" name="busqueda" th:value="${param.busqueda}" placeholder="Buscar docente o Área..." style="padding: 10px; border: 2px solid #003366; border-radius: 25px; font-size: 14px; outline: none; min-width: 250px;">
             <button type="submit" style="background: #003366; color: white; border: none; padding: 10px 20px; border-radius: 25px; cursor: pointer;">Buscar</button>
             <a th:href="@{/docentes}" style="background: #666; color: white; padding: 10px 20px; border-radius: 25px; text-decoration: none;">Limpiar</a>
         </form>
     </div>
 
-    <!-- Grid de Profesores con Efecto Flip Card 3D -->
-    <div class="profesores-grid-flip">
+    <!-- Grid de Docentes Compacto -->
+    <div class="docentes-grid-compacto">
         <div class="flip-card-profesor" th:each="docente : ${docentes}">
             <div class="flip-card-inner-profesor">
 
-                <!-- FRENTE DE LA TARJETA -->
+                <!-- FRENTE -->
                 <div class="flip-card-front-profesor">
-                    <div class="profesor-imagen-flip">
+                    <div class="profesor-imagen">
                         <img th:if="${docente.imagenUrl}" th:src="@{'/uploads/' + ${docente.imagenUrl}}" alt="Profesor">
-                        <div th:unless="${docente.imagenUrl}" class="placeholder-flip">👤</div>
+                        <div th:unless="${docente.imagenUrl}" class="placeholder-profesor">👤</div>
                     </div>
                     <div class="profesor-info-front">
                         <h3 th:text="${docente.nombre}">Nombre Docente</h3>
                         <p class="area-front" th:text="${docente.area}">Área</p>
-                        <small style="color: #666; font-size: 0.8em;">Pasa el mouse para ver más ↻</small>
+                        <div class="orden-badge" th:text="'#' + ${docente.orden}">#1</div>
                     </div>
                 </div>
 
-                <!-- REVERSO DE LA TARJETA -->
+                <!-- REVERSO -->
                 <div class="flip-card-back-profesor">
                     <h3 th:text="${docente.nombre}" style="color: #003366; margin-bottom: 10px; font-size: 1.1em;">Nombre</h3>
                     <p class="especialidad-back" th:text="${docente.especialidad}">Especialidad</p>
@@ -82,10 +82,8 @@
                     <div class="detalle-back">
                         <p><strong>📧 Email:</strong> <span th:text="${docente.email}">email</span></p>
                         <p><strong>📱 Teléfono:</strong> <span th:text="${docente.telefono}">tel</span></p>
-                        <p><strong>📍 Área:</strong> <span th:text="${docente.area}">area</span></p>
+                        <p><strong>⭐ Exp:</strong> <span th:text="${docente.experienciaAnios} + ' años'">exp</span></p>
                     </div>
-
-                    <span class="badge-exp-back" th:text="${docente.experienciaAnios} + ' años de exp.'">Exp</span>
                 </div>
 
             </div>
@@ -97,25 +95,220 @@
     </div>
 
     <style>
-        /* 🔄 GRID DE PROFESORES CON FLIP CARD */
-        .profesores-grid-flip {
+        /* ===== BANNER COMPACTO ===== */
+        .banner-admin-compacto {
+            position: relative;
+            width: 100%;
+            height: 280px; /* Reducido de 450px */
+            background: linear-gradient(135deg, #001a33 0%, #003366 50%, #004488 100%);
+            border-radius: 10px; /* Reducido de 20px */
+            overflow: hidden;
+            margin-bottom: 20px; /* Reducido de 40px */
+            box-shadow: 0 10px 30px rgba(0, 51, 102, 0.4);
+        }
+
+        #particles-admin {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .ondas-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            overflow: hidden;
+        }
+
+        .onda {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 200%;
+            height: 200%;
+            background: transparent;
+            border-radius: 40%;
+            opacity: 0.3;
+        }
+
+        .onda-1 {
+            background: rgba(255, 215, 0, 0.1);
+            animation: rotarOnda 20s linear infinite;
+            bottom: -150%;
+        }
+
+        .onda-2 {
+            background: rgba(0, 102, 204, 0.2);
+            animation: rotarOnda 25s linear infinite reverse;
+            bottom: -140%;
+            left: -50%;
+        }
+
+        .onda-3 {
+            background: rgba(255, 215, 0, 0.15);
+            animation: rotarOnda 30s linear infinite;
+            bottom: -160%;
+            left: 25%;
+        }
+
+        .onda-4 {
+            background: rgba(0, 200, 255, 0.1);
+            animation: rotarOnda 35s linear infinite reverse;
+            bottom: -155%;
+            left: -25%;
+        }
+
+        @keyframes rotarOnda {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .luz-brillante {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 400px; /* Reducido de 600px */
+            height: 400px;
+            background: radial-gradient(circle, rgba(255,215,0,0.2) 0%, transparent 70%);
+            z-index: 2;
+            animation: pulsarLuz 4s ease-in-out infinite;
+        }
+
+        @keyframes pulsarLuz {
+            0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 0.8; transform: translate(-50%, -50%) scale(1.1); }
+        }
+
+        .contenido-admin-compacto {
+            position: relative;
+            z-index: 10;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: white;
+            padding: 20px;
+        }
+
+        .icono-admin-container {
+            position: relative;
+            margin-bottom: 10px;
+        }
+
+        .icono-admin {
+            font-size: 3em; /* Reducido de 5em */
+            position: relative;
+            z-index: 2;
+            animation: flotarIcono 3s ease-in-out infinite;
+        }
+
+        .anillos-icono {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px; /* Reducido de 120px */
+            height: 80px;
+            border: 2px solid rgba(255, 215, 0, 0.5);
+            border-radius: 50%;
+            animation: expandirAnillo 2s ease-out infinite;
+        }
+
+        .anillos-icono::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100px; /* Reducido de 140px */
+            height: 100px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 50%;
+            animation: expandirAnillo 2s ease-out 0.5s infinite;
+        }
+
+        @keyframes flotarIcono {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes expandirAnillo {
+            0% { transform: translate(-50%, -50%) scale(0.8); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
+        }
+
+        .titulo-admin-compacto {
+            font-size: 2.5em; /* Reducido de 3.5em */
+            margin: 0 0 10px 0;
+            font-weight: 700;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+            animation: aparecerTexto 0.8s ease-out;
+        }
+
+        .subtitulo-admin-compacto {
+            font-size: 1.1em; /* Reducido de 1.3em */
+            margin: 0;
+            opacity: 0.9;
+            animation: aparecerTexto 0.8s ease-out 0.3s both;
+        }
+
+        @keyframes aparecerTexto {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .linea-neon-compacto {
+            width: 200px; /* Reducido de 300px */
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #ffd700, transparent);
+            position: relative;
+            overflow: hidden;
+            margin-top: 15px;
+        }
+
+        .punto-luz {
+            position: absolute;
+            top: 50%;
+            left: -10px;
+            width: 20px;
+            height: 20px;
+            background: #ffd700;
+            border-radius: 50%;
+            transform: translateY(-50%);
+            box-shadow: 0 0 20px #ffd700, 0 0 40px #ffd700;
+            animation: moverLuz 3s linear infinite;
+        }
+
+        @keyframes moverLuz {
+            0% { left: -10px; }
+            100% { left: 100%; }
+        }
+
+        /* ===== GRID DE DOCENTES COMPACTO ===== */
+        .docentes-grid-compacto {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
             gap: 30px;
-            margin-top: 20px;
             padding: 0 10px;
         }
 
-        /* Contenedor principal del flip */
         .flip-card-profesor {
             background-color: transparent;
             width: 100%;
-            height: 320px;
+            height: 320px; /* Reducido de 380px */
             perspective: 1000px;
             cursor: pointer;
         }
 
-        /* Inner container que rota */
         .flip-card-inner-profesor {
             position: relative;
             width: 100%;
@@ -127,14 +320,11 @@
             border-radius: 15px;
         }
 
-        /* Efecto hover: rota 180 grados */
         .flip-card-profesor:hover .flip-card-inner-profesor {
             transform: rotateY(180deg);
         }
 
-        /* Frente y reverso: ocupan todo el espacio */
-        .flip-card-front-profesor,
-        .flip-card-back-profesor {
+        .flip-card-front-profesor, .flip-card-back-profesor {
             position: absolute;
             width: 100%;
             height: 100%;
@@ -144,33 +334,31 @@
             overflow: hidden;
         }
 
-        /* FRENTE: Imagen y nombre */
         .flip-card-front-profesor {
             background-color: white;
             display: flex;
             flex-direction: column;
         }
 
-        .profesor-imagen-flip {
+        .profesor-imagen {
             width: 100%;
-            height: 220px;
+            height: 220px; /* Reducido */
             overflow: hidden;
             position: relative;
         }
 
-        .profesor-imagen-flip img {
+        .profesor-imagen img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            object-position: top center;
-            transition: transform 0.3s ease;
+            transition: transform 0.3s;
         }
 
-        .flip-card-profesor:hover .profesor-imagen-flip img {
+        .flip-card-profesor:hover .profesor-imagen img {
             transform: scale(1.1);
         }
 
-        .placeholder-flip {
+        .placeholder-profesor {
             width: 100%;
             height: 100%;
             background: linear-gradient(135deg, #003366 0%, #004488 100%);
@@ -187,13 +375,14 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
+            align-items: center;
+            position: relative;
         }
 
         .profesor-info-front h3 {
             color: #003366;
-            font-size: 1.1em;
             margin: 0 0 8px 0;
-            font-weight: 600;
+            font-size: 1.1em;
         }
 
         .area-front {
@@ -202,7 +391,23 @@
             margin: 0;
         }
 
-        /* REVERSO: Información detallada */
+        .orden-badge {
+            position: absolute;
+            top: -210px;
+            right: 10px;
+            background: #ffd700;
+            color: #003366;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1em;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
         .flip-card-back-profesor {
             background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
             color: #333;
@@ -230,10 +435,6 @@
             font-style: italic;
         }
 
-        [data-theme="dark"] .especialidad-back {
-            color: #ffd700;
-        }
-
         .detalle-back {
             background: #f0f4f8;
             padding: 15px;
@@ -257,58 +458,123 @@
             color: #eaeaea;
         }
 
-        .badge-exp-back {
-            display: inline-block;
-            background: #ffd700;
-            color: #003366;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 0.85em;
-            font-weight: bold;
-        }
-
         /* Responsive */
         @media (max-width: 768px) {
-            .profesores-grid-flip {
-                grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-                gap: 20px;
+            .banner-admin-compacto {
+                height: 250px;
             }
-
-            .flip-card-profesor {
-                height: 300px;
+            .titulo-admin-compacto {
+                font-size: 1.8em;
+            }
+            .docentes-grid-compacto {
+                grid-template-columns: 1fr;
             }
         }
     </style>
 
     <script>
-        function mostrarLoginRegistro() {
-            document.getElementById('loginRegistro').style.display = 'block';
-            document.getElementById('errorLogin').style.display = 'none';
-            document.getElementById('usuarioRegistro').value = '';
-            document.getElementById('passwordRegistro').value = '';
+        /* ===== PARTÍCULAS ===== */
+        const canvasAdmin = document.getElementById('particles-admin');
+        const ctxAdmin = canvasAdmin.getContext('2d');
+
+        canvasAdmin.width = canvasAdmin.offsetWidth;
+        canvasAdmin.height = canvasAdmin.offsetHeight;
+
+        const particulasAdmin = [];
+        const numParticulas = 40; /* Reducido de 60 */
+
+        class ParticulaAdmin {
+            constructor() {
+                this.x = Math.random() * canvasAdmin.width;
+                this.y = Math.random() * canvasAdmin.height;
+                this.size = Math.random() * 2 + 1;
+                this.speedX = (Math.random() - 0.5) * 0.5;
+                this.speedY = (Math.random() - 0.5) * 0.5;
+                this.color = Math.random() > 0.5 ? '#ffd700' : '#00ccff';
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.x > canvasAdmin.width) this.x = 0;
+                if (this.x < 0) this.x = canvasAdmin.width;
+                if (this.y > canvasAdmin.height) this.y = 0;
+                if (this.y < 0) this.y = canvasAdmin.height;
+            }
+
+            draw() {
+                ctxAdmin.fillStyle = this.color;
+                ctxAdmin.shadowBlur = 10;
+                ctxAdmin.shadowColor = this.color;
+                ctxAdmin.beginPath();
+                ctxAdmin.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctxAdmin.fill();
+                ctxAdmin.shadowBlur = 0;
+            }
         }
 
-        function cancelarLogin() {
-            document.getElementById('loginRegistro').style.display = 'none';
-            document.getElementById('errorLogin').style.display = 'none';
+        function initParticulasAdmin() {
+            for (let i = 0; i < numParticulas; i++) {
+                particulasAdmin.push(new ParticulaAdmin());
+            }
         }
 
-        function verificarAccesoRegistro() {
-            const usuario = document.getElementById('usuarioRegistro').value;
-            const password = document.getElementById('passwordRegistro').value;
+        function animarParticulasAdmin() {
+            ctxAdmin.clearRect(0, 0, canvasAdmin.width, canvasAdmin.height);
 
-            if (usuario === 'Admin' && password === '2026') {
+            for (let p of particulasAdmin) {
+                p.update();
+                p.draw();
+            }
+
+            for (let i = 0; i < particulasAdmin.length; i++) {
+                for (let j = i + 1; j < particulasAdmin.length; j++) {
+                    const dx = particulasAdmin[i].x - particulasAdmin[j].x;
+                    const dy = particulasAdmin[i].y - particulasAdmin[j].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+
+                    if (dist < 100) {
+                        ctxAdmin.beginPath();
+                        ctxAdmin.strokeStyle = `rgba(255, 215, 0, ${0.2 * (1 - dist/100)})`;
+                        ctxAdmin.lineWidth = 1;
+                        ctxAdmin.moveTo(particulasAdmin[i].x, particulasAdmin[i].y);
+                        ctxAdmin.lineTo(particulasAdmin[j].x, particulasAdmin[j].y);
+                        ctxAdmin.stroke();
+                    }
+                }
+            }
+
+            requestAnimationFrame(animarParticulasAdmin);
+        }
+
+        initParticulasAdmin();
+        animarParticulasAdmin();
+
+        window.addEventListener('resize', () => {
+            canvasAdmin.width = canvasAdmin.offsetWidth;
+            canvasAdmin.height = canvasAdmin.offsetHeight;
+        });
+
+        /* ===== FUNCIONES LOGIN ===== */
+        function mostrarLoginDocente() {
+            document.getElementById('loginDocente').style.display = 'block';
+            document.getElementById('errorLoginDocente').style.display = 'none';
+        }
+
+        function cancelarLoginDocente() {
+            document.getElementById('loginDocente').style.display = 'none';
+        }
+
+        function verificarDocente() {
+            const user = document.getElementById('usuarioDocente').value;
+            const pass = document.getElementById('passwordDocente').value;
+
+            if (user === 'Admin' && pass === '2026') {
                 window.location.href = '/docentes/nuevo';
             } else {
-                document.getElementById('errorLogin').style.display = 'block';
+                document.getElementById('errorLoginDocente').style.display = 'block';
             }
         }
-
-        document.getElementById('passwordRegistro').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                verificarAccesoRegistro();
-            }
-        });
     </script>
 </section>
 </html>
