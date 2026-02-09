@@ -1,21 +1,39 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout('Semillero de Investigación', ~{::section})}">
 <section>
-    <!-- Header del Semillero -->
-    <div style="background: linear-gradient(135deg, #003366, #004488); padding: 60px 20px; text-align: center; border-radius: 10px; color: white; margin-bottom: 30px;">
-        <h1 style="font-size: 2.8em; margin-bottom: 15px;">🔬 Semillero de Investigación</h1>
-        <p style="font-size: 1.2em; opacity: 0.9;">Proyectos de investigación y desarrollo de la Universidad</p>
-        <div style="width: 100px; height: 4px; background: #ffd700; margin: 20px auto;"></div>
+    <!-- BANNER ANIMADO CON MALLA GEOMÉTRICA -->
+    <div class="banner-semillero-malla">
+        <canvas id="malla-canvas"></canvas>
+        <div class="banner-contenido-malla">
+            <div class="icono-pulso">🔬</div>
+            <h1 class="titulo-malla">Semillero de Investigación</h1>
+            <p class="subtitulo-malla">Proyectos de investigación y desarrollo de la Universidad</p>
+            <div class="linea-animada"></div>
+            <div class="stats-malla">
+                <div class="stat-item">
+                    <span class="stat-numero" id="contador-proyectos">0</span>
+                    <span class="stat-label">Proyectos</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-numero" id="contador-areas">0</span>
+                    <span class="stat-label">Áreas</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-numero" id="contador-investigadores">0</span>
+                    <span class="stat-label">Investigadores</span>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- Botón Admin -->
+    <!-- Botón Registrar -->
     <div style="text-align: center; margin-bottom: 30px;">
-        <button onclick="mostrarLoginSemillero()" style="background: #ffd700; color: #003366; padding: 15px 30px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 1em;">
+        <button onclick="mostrarLoginSemillero()" class="btn-registrar-malla">
             ➕ Registrar Nuevo Proyecto
         </button>
     </div>
 
-    <!-- Login Admin -->
+    <!-- Login Admin (oculto) -->
     <div id="loginSemillero" style="display: none; max-width: 400px; margin: 20px auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
         <h3 style="color: #003366; text-align: center; margin-bottom: 20px;">🔒 Acceso Administrativo</h3>
         <div style="margin-bottom: 15px;">
@@ -34,29 +52,29 @@
     </div>
 
     <!-- Filtros -->
-    <div style="display: flex; justify-content: center; gap: 15px; margin-bottom: 30px; flex-wrap: wrap;">
-        <a th:href="@{/semillero}" th:class="${areaActual == null && estadoActual == null} ? 'filtro-activo' : 'filtro-inactivo'" class="filtro-btn">Todos</a>
-        <a th:href="@{/semillero(area='Ingeniería')}" th:class="${areaActual == 'Ingeniería'} ? 'filtro-activo' : 'filtro-inactivo'" class="filtro-btn">Ingeniería</a>
-        <a th:href="@{/semillero(area='Salud')}" th:class="${areaActual == 'Salud'} ? 'filtro-activo' : 'filtro-inactivo'" class="filtro-btn">Salud</a>
-        <a th:href="@{/semillero(area='Sociales')}" th:class="${areaActual == 'Sociales'} ? 'filtro-activo' : 'filtro-inactivo'" class="filtro-btn">Sociales</a>
-        <a th:href="@{/semillero(area='Ambiental')}" th:class="${areaActual == 'Ambiental'} ? 'filtro-activo' : 'filtro-inactivo'" class="filtro-btn">Ambiental</a>
+    <div class="filtros-malla">
+        <a th:href="@{/semillero}" th:class="${areaActual == null} ? 'filtro-activo' : 'filtro-inactivo'" class="filtro-btn-malla">Todos</a>
+        <a th:href="@{/semillero(area='Ingeniería')}" th:class="${areaActual == 'Ingeniería'} ? 'filtro-activo' : 'filtro-inactivo'" class="filtro-btn-malla">Ingeniería</a>
+        <a th:href="@{/semillero(area='Salud')}" th:class="${areaActual == 'Salud'} ? 'filtro-activo' : 'filtro-inactivo'" class="filtro-btn-malla">Salud</a>
+        <a th:href="@{/semillero(area='Sociales')}" th:class="${areaActual == 'Sociales'} ? 'filtro-activo' : 'filtro-inactivo'" class="filtro-btn-malla">Sociales</a>
+        <a th:href="@{/semillero(area='Ambiental')}" th:class="${areaActual == 'Ambiental'} ? 'filtro-activo' : 'filtro-inactivo'" class="filtro-btn-malla">Ambiental</a>
     </div>
 
-    <!-- Grid de Proyectos con Flip Card -->
-    <div class="proyectos-grid">
+    <!-- Grid de Proyectos con Flip Cards -->
+    <div class="proyectos-grid-malla">
         <div class="flip-card-proyecto" th:each="proyecto : ${proyectos}">
             <div class="flip-card-inner-proyecto">
 
                 <!-- FRENTE -->
                 <div class="flip-card-front-proyecto">
-                    <div class="proyecto-imagen">
-                        <img th:if="${proyecto.imagenPrincipal}" th:src="@{'/uploads/' + ${proyecto.imagenPrincipal}}" alt="Proyecto">
-                        <div th:unless="${proyecto.imagenPrincipal}" class="placeholder-proyecto">🔬</div>
+                    <div class="proyecto-imagen-malla">
+                        <img th:if="${proyecto.imagenPrincipal != null}" th:src="@{'/uploads/' + ${proyecto.imagenPrincipal}}" alt="Proyecto">
+                        <div th:unless="${proyecto.imagenPrincipal != null}" class="placeholder-proyecto-malla">🔬</div>
                     </div>
-                    <div class="proyecto-info-front">
-                        <span class="badge-area" th:text="${proyecto.area}">Área</span>
+                    <div class="proyecto-info-front-malla">
+                        <span class="badge-area-malla" th:text="${proyecto.area}">Área</span>
                         <h3 th:text="${proyecto.titulo}">Título</h3>
-                        <span class="badge-estado" th:class="'estado-' + ${proyecto.estado}" th:text="${proyecto.estado}">Estado</span>
+                        <span class="badge-estado-malla" th:class="'estado-' + ${proyecto.estado}" th:text="${proyecto.estado}">Estado</span>
                         <small style="color: #666; display: block; margin-top: 10px;">↻ Pasa el mouse para ver más</small>
                     </div>
                 </div>
@@ -66,12 +84,12 @@
                     <h3 th:text="${proyecto.titulo}" style="color: #003366; margin-bottom: 10px; font-size: 1.1em;">Título</h3>
                     <p style="color: #555; font-size: 0.9em; margin-bottom: 15px;" th:text="${#strings.abbreviate(proyecto.descripcion, 80)}">Descripción...</p>
 
-                    <div class="info-back">
-                        <p><strong>📅 Inicio:</strong> <span th:text="${proyecto.fechaInicio}">Fecha</span></p>
+                    <div class="info-back-malla">
+                        <p th:if="${proyecto.fechaInicio != null}"><strong>📅 Inicio:</strong> <span th:text="${proyecto.fechaInicio}">Fecha</span></p>
                         <p><strong>👥 Integrantes:</strong> <span th:text="${proyecto.integrantes}">Integrantes</span></p>
                     </div>
 
-                    <a th:href="@{/semillero/{id}(id=${proyecto.id})}" class="btn-ver-mas">Ver Proyecto →</a>
+                    <a th:href="@{/semillero/{id}(id=${proyecto.id})}" class="btn-ver-mas-malla">Ver Proyecto →</a>
                 </div>
 
             </div>
@@ -83,18 +101,187 @@
     </div>
 
     <style>
-        .filtro-btn {
-            padding: 10px 25px;
+        /* ===== BANNER MALLA GEOMÉTRICA ===== */
+        .banner-semillero-malla {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            background: linear-gradient(135deg, #003366 0%, #004488 50%, #0066cc 100%);
+            border-radius: 20px;
+            overflow: hidden;
+            margin-bottom: 40px;
+            box-shadow: 0 20px 60px rgba(0, 51, 102, 0.4);
+        }
+
+        #malla-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .banner-contenido-malla {
+            position: relative;
+            z-index: 2;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: white;
+            padding: 30px;
+        }
+
+        .icono-pulso {
+            font-size: 4em;
+            margin-bottom: 20px;
+            animation: pulso 2s ease-in-out infinite;
+            filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.5));
+        }
+
+        @keyframes pulso {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        .titulo-malla {
+            font-size: 3em;
+            margin: 0 0 15px 0;
+            font-weight: 700;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            animation: slideDown 0.8s ease-out;
+        }
+
+        .subtitulo-malla {
+            font-size: 1.3em;
+            margin: 0;
+            opacity: 0.9;
+            max-width: 600px;
+            animation: slideUp 0.8s ease-out 0.2s both;
+        }
+
+        .linea-animada {
+            width: 150px;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, #ffd700, transparent);
+            margin: 25px 0;
+            border-radius: 2px;
+            animation: expandLine 1s ease-out 0.5s both;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes expandLine {
+            from { width: 0; opacity: 0; }
+            to { width: 150px; opacity: 1; }
+        }
+
+        /* Stats animadas */
+        .stats-malla {
+            display: flex;
+            gap: 40px;
+            margin-top: 30px;
+            animation: fadeIn 1s ease-out 0.8s both;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-numero {
+            display: block;
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #ffd700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* ===== BOTÓN ===== */
+        .btn-registrar-malla {
+            background: linear-gradient(135deg, #ffd700 0%, #ffcc00 100%);
+            color: #003366;
+            padding: 20px 50px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-registrar-malla::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-registrar-malla:hover::before {
+            left: 100%;
+        }
+
+        .btn-registrar-malla:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(255, 215, 0, 0.6);
+        }
+
+        /* ===== FILTROS ===== */
+        .filtros-malla {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .filtro-btn-malla {
+            padding: 12px 30px;
             border: 2px solid #003366;
-            border-radius: 25px;
+            border-radius: 30px;
             text-decoration: none;
             font-weight: bold;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-size: 0.9em;
+            letter-spacing: 1px;
         }
 
         .filtro-activo {
             background: #003366;
             color: white;
+            box-shadow: 0 5px 15px rgba(0, 51, 102, 0.3);
         }
 
         .filtro-inactivo {
@@ -102,23 +289,23 @@
             color: #003366;
         }
 
-        .filtro-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        .filtro-btn-malla:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
         }
 
-        /* Grid y Flip Cards */
-        .proyectos-grid {
+        /* ===== GRID Y FLIP CARDS ===== */
+        .proyectos-grid-malla {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 30px;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 35px;
             padding: 0 10px;
         }
 
         .flip-card-proyecto {
             background-color: transparent;
             width: 100%;
-            height: 380px;
+            height: 400px;
             perspective: 1000px;
             cursor: pointer;
         }
@@ -130,8 +317,8 @@
             text-align: center;
             transition: transform 0.6s;
             transform-style: preserve-3d;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            border-radius: 20px;
         }
 
         .flip-card-proyecto:hover .flip-card-inner-proyecto {
@@ -144,36 +331,35 @@
             height: 100%;
             -webkit-backface-visibility: hidden;
             backface-visibility: hidden;
-            border-radius: 15px;
+            border-radius: 20px;
             overflow: hidden;
         }
 
-        /* Frente */
         .flip-card-front-proyecto {
             background-color: white;
             display: flex;
             flex-direction: column;
         }
 
-        .proyecto-imagen {
+        .proyecto-imagen-malla {
             width: 100%;
-            height: 220px;
+            height: 240px;
             overflow: hidden;
             position: relative;
         }
 
-        .proyecto-imagen img {
+        .proyecto-imagen-malla img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform 0.3s;
+            transition: transform 0.5s;
         }
 
-        .flip-card-proyecto:hover .proyecto-imagen img {
+        .flip-card-proyecto:hover .proyecto-imagen-malla img {
             transform: scale(1.1);
         }
 
-        .placeholder-proyecto {
+        .placeholder-proyecto-malla {
             width: 100%;
             height: 100%;
             background: linear-gradient(135deg, #003366 0%, #004488 100%);
@@ -184,8 +370,8 @@
             font-size: 5em;
         }
 
-        .proyecto-info-front {
-            padding: 20px;
+        .proyecto-info-front-malla {
+            padding: 25px;
             flex: 1;
             display: flex;
             flex-direction: column;
@@ -193,35 +379,35 @@
             align-items: center;
         }
 
-        .proyecto-info-front h3 {
+        .proyecto-info-front-malla h3 {
             color: #003366;
-            margin: 10px 0;
-            font-size: 1.2em;
+            margin: 15px 0;
+            font-size: 1.3em;
         }
 
-        .badge-area {
-            background: #ffd700;
+        .badge-area-malla {
+            background: linear-gradient(135deg, #ffd700 0%, #ffcc00 100%);
             color: #003366;
-            padding: 5px 15px;
+            padding: 6px 18px;
             border-radius: 20px;
-            font-size: 0.8em;
+            font-size: 0.85em;
             font-weight: bold;
             text-transform: uppercase;
+            box-shadow: 0 3px 10px rgba(255, 215, 0, 0.3);
         }
 
-        .badge-estado {
-            padding: 5px 15px;
+        .badge-estado-malla {
+            padding: 6px 18px;
             border-radius: 20px;
-            font-size: 0.8em;
+            font-size: 0.85em;
             font-weight: bold;
-            margin-top: 5px;
+            margin-top: 8px;
         }
 
         .estado-Activo { background: #28a745; color: white; }
         .estado-Finalizado { background: #6c757d; color: white; }
         .estado-En\ progreso { background: #ffc107; color: #003366; }
 
-        /* Reverso */
         .flip-card-back-proyecto {
             background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
             color: #333;
@@ -230,9 +416,9 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 25px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-            border-left: 5px solid #003366;
+            padding: 30px;
+            box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+            border-left: 6px solid #003366;
         }
 
         [data-theme="dark"] .flip-card-back-proyecto {
@@ -241,54 +427,176 @@
             border-left-color: #ffd700;
         }
 
-        .info-back {
+        .info-back-malla {
             background: #f0f4f8;
-            padding: 15px;
-            border-radius: 10px;
-            margin: 15px 0;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
             width: 100%;
             text-align: left;
-            font-size: 0.85em;
+            font-size: 0.9em;
         }
 
-        [data-theme="dark"] .info-back {
+        [data-theme="dark"] .info-back-malla {
             background: #0f3460;
         }
 
-        .info-back p {
-            margin: 8px 0;
+        .info-back-malla p {
+            margin: 10px 0;
         }
 
-        .btn-ver-mas {
-            background: #003366;
+        .btn-ver-mas-malla {
+            background: linear-gradient(135deg, #003366 0%, #004488 100%);
             color: white;
-            padding: 12px 30px;
-            border-radius: 25px;
+            padding: 14px 35px;
+            border-radius: 30px;
             text-decoration: none;
             font-weight: bold;
             transition: all 0.3s;
-            margin-top: 10px;
+            margin-top: 15px;
+            box-shadow: 0 5px 15px rgba(0, 51, 102, 0.3);
         }
 
-        .btn-ver-mas:hover {
-            background: #ffd700;
+        .btn-ver-mas-malla:hover {
+            background: linear-gradient(135deg, #ffd700 0%, #ffcc00 100%);
             color: #003366;
             transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
         }
 
+        /* Responsive */
         @media (max-width: 768px) {
-            .proyectos-grid {
+            .banner-semillero-malla {
+                height: 350px;
+            }
+            .titulo-malla {
+                font-size: 2.2em;
+            }
+            .stats-malla {
+                gap: 20px;
+            }
+            .stat-numero {
+                font-size: 1.8em;
+            }
+            .proyectos-grid-malla {
                 grid-template-columns: 1fr;
             }
         }
     </style>
 
     <script>
+        /* ===== ANIMACIÓN DE MALLA GEOMÉTRICA ===== */
+        const canvas = document.getElementById('malla-canvas');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = canvas.offsetWidth;
+        canvas.height = canvas.offsetHeight;
+
+        const puntos = [];
+        const numPuntos = 80;
+        const distanciaConexion = 150;
+
+        class Punto {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.vx = (Math.random() - 0.5) * 0.8;
+                this.vy = (Math.random() - 0.5) * 0.8;
+                this.radio = Math.random() * 2 + 1;
+            }
+
+            actualizar() {
+                this.x += this.vx;
+                this.y += this.vy;
+
+                if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+            }
+
+            dibujar() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radio, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(255, 215, 0, 0.6)';
+                ctx.fill();
+            }
+        }
+
+        function initMalla() {
+            for (let i = 0; i < numPuntos; i++) {
+                puntos.push(new Punto());
+            }
+        }
+
+        function animarMalla() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Actualizar y dibujar puntos
+            for (let punto of puntos) {
+                punto.actualizar();
+                punto.dibujar();
+            }
+
+            // Dibujar conexiones
+            for (let i = 0; i < puntos.length; i++) {
+                for (let j = i + 1; j < puntos.length; j++) {
+                    const dx = puntos[i].x - puntos[j].x;
+                    const dy = puntos[i].y - puntos[j].y;
+                    const distancia = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distancia < distanciaConexion) {
+                        ctx.beginPath();
+                        ctx.moveTo(puntos[i].x, puntos[i].y);
+                        ctx.lineTo(puntos[j].x, puntos[j].y);
+                        const opacidad = 1 - (distancia / distanciaConexion);
+                        ctx.strokeStyle = `rgba(255, 255, 255, ${opacidad * 0.3})`;
+                        ctx.lineWidth = 1;
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            requestAnimationFrame(animarMalla);
+        }
+
+        initMalla();
+        animarMalla();
+
+        // Contadores animados
+        function animarContador(id, valorFinal, duracion) {
+            const elemento = document.getElementById(id);
+            let valorActual = 0;
+            const incremento = valorFinal / (duracion / 16);
+
+            function actualizar() {
+                valorActual += incremento;
+                if (valorActual < valorFinal) {
+                    elemento.textContent = Math.floor(valorActual);
+                    requestAnimationFrame(actualizar);
+                } else {
+                    elemento.textContent = valorFinal;
+                }
+            }
+
+            actualizar();
+        }
+
+        // Iniciar contadores al cargar
+        setTimeout(() => {
+            animarContador('contador-proyectos', 12, 2000);
+            animarContador('contador-areas', 5, 2000);
+            animarContador('contador-investigadores', 24, 2000);
+        }, 1000);
+
+        // Redimensionar canvas
+        window.addEventListener('resize', () => {
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+        });
+
+        /* ===== FUNCIONES LOGIN ===== */
         function mostrarLoginSemillero() {
             document.getElementById('loginSemillero').style.display = 'block';
             document.getElementById('errorLoginSemillero').style.display = 'none';
-            document.getElementById('usuarioSemillero').value = '';
-            document.getElementById('passwordSemillero').value = '';
         }
 
         function cancelarLoginSemillero() {
@@ -296,21 +604,15 @@
         }
 
         function verificarAccesoSemillero() {
-            const usuario = document.getElementById('usuarioSemillero').value;
-            const password = document.getElementById('passwordSemillero').value;
+            const user = document.getElementById('usuarioSemillero').value;
+            const pass = document.getElementById('passwordSemillero').value;
 
-            if (usuario === 'Admin' && password === '2026') {
+            if (user === 'Admin' && pass === '2026') {
                 window.location.href = '/semillero/nuevo';
             } else {
                 document.getElementById('errorLoginSemillero').style.display = 'block';
             }
         }
-
-        document.getElementById('passwordSemillero').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                verificarAccesoSemillero();
-            }
-        });
     </script>
 </section>
 </html>
