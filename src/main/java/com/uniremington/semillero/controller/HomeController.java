@@ -1,465 +1,352 @@
 package com.uniremington.semillero.controller;
 
-import com.uniremington.semillero.model.Docente;
-import com.uniremington.semillero.model.Evento;
-import com.uniremington.semillero.model.FotoEvento;
-import com.uniremington.semillero.model.Noticia;
-import com.uniremington.semillero.service.DocenteService;
-import com.uniremington.semillero.service.EventoService;
-import com.uniremington.semillero.repository.FotoEventoRepository;
-import com.uniremington.semillero.repository.NoticiaRepository;
-import com.uniremington.semillero.model.Proyecto;
-import com.uniremington.semillero.model.FotoProyecto;
-import com.uniremington.semillero.service.ProyectoService;
-import com.uniremington.semillero.repository.FotoProyectoRepository;
+import com.uniremington.semillero.model.DocenteDTO;
+import com.uniremington.semillero.model.EventoDTO;
+import com.uniremington.semillero.model.FotoEventoDTO;
+import com.uniremington.semillero.service.DocenteClientService;
+import com.uniremington.semillero.service.EventoClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @Controller
 public class HomeController {
 
-    private final DocenteService docenteService;
-    private final EventoService eventoService;
+    @Autowired
+    private DocenteClientService docenteClientService;
 
     @Autowired
-    private FotoEventoRepository fotoEventoRepository;
+    private EventoClientService eventoClientService;
 
-    @Autowired
-    private NoticiaRepository noticiaRepository;
+    // ==================== NOTICIAS ESTÁTICAS ====================
+    public static class NoticiaEstatica {
+        private String titulo;
+        private String subtitulo;
+        private String imagenUrl;
+        private String link;
 
-    @Autowired
-    private ProyectoService proyectoService;
+        public NoticiaEstatica(String titulo, String subtitulo, String imagenUrl, String link) {
+            this.titulo = titulo;
+            this.subtitulo = subtitulo;
+            this.imagenUrl = imagenUrl;
+            this.link = link;
+        }
 
-    @Autowired
-    private FotoProyectoRepository fotoProyectoRepository;
-
-    @Autowired
-    public HomeController(DocenteService docenteService, EventoService eventoService) {
-        this.docenteService = docenteService;
-        this.eventoService = eventoService;
+        public String getTitulo() { return titulo; }
+        public String getSubtitulo() { return subtitulo; }
+        public String getImagenUrl() { return imagenUrl; }
+        public String getLink() { return link; }
     }
 
-    // ==================== PÁGINA DE INICIO ====================
+    // ==================== INDEX ====================
     @GetMapping("/")
     public String index(Model model) {
-        model.addAttribute("docentes", docenteService.listarTodos());
-        model.addAttribute("eventos", eventoService.listarProximos());
-        model.addAttribute("noticias", noticiaRepository.findByActivaTrueOrderByOrdenAsc());
+        List<NoticiaEstatica> noticias = Arrays.asList(
+                new NoticiaEstatica("Nuevo Semillero de Investigación",
+                        "Participa en nuestros proyectos de innovación y desarrollo tecnológico",
+                        "/images/noticia1.jpg", "/semillero"),
+                new NoticiaEstatica("Convocatoria Docente 2026",
+                        "Únete a nuestro equipo de profesionales calificados",
+                        "/images/noticia2.jpg", "/docentes"),
+                new NoticiaEstatica("Eventos Académicos",
+                        "Conoce nuestros próximos eventos y actividades",
+                        "/images/noticia3.jpg", "/eventos"),
+                new NoticiaEstatica("Proyectos Destacados",
+                        "Descubre los proyectos más innovadores de nuestros estudiantes",
+                        "/images/noticia4.jpg", "/semillero")
+        );
+        model.addAttribute("noticias", noticias);
+
+        try {
+            List<EventoDTO> eventos = eventoClientService.listarProximos();
+            model.addAttribute("eventos", eventos);
+        } catch (Exception e) {
+            model.addAttribute("eventos", Collections.emptyList());
+        }
+
         return "index";
     }
 
     // ==================== DOCENTES ====================
     @GetMapping("/docentes")
-    public String docentes(@RequestParam(required = false) String busqueda, Model model) {
-        if (busqueda != null && !busqueda.isEmpty()) {
-            model.addAttribute("docentes", docenteService.buscar(busqueda));
-        } else {
-            model.addAttribute("docentes", docenteService.listarTodos());
+    public String docentes(@RequestParam(required = false) String area, Model model) {
+        List<DocenteDTO> docentes;
+        String mensajeError = null;
+
+        System.out.println(">>> HOME CONTROLLER: Cargando docentes, área: " + area);
+
+        try {
+            if (area != null && !area.isEmpty()) {
+                docentes = docenteClientService.listarPorArea(area);
+            } else {
+                docentes = docenteClientService.listarTodos();
+            }
+
+            System.out.println(">>> HOME CONTROLLER: Docentes recibidos: " + (docentes != null ? docentes.size() : "null"));
+
+            if (docentes != null && !docentes.isEmpty()) {
+                docentes.sort((d1, d2) -> {
+                    Integer o1 = d1.getOrden() != null ? d1.getOrden() : 0;
+                    Integer o2 = d2.getOrden() != null ? d2.getOrden() : 0;
+                    return o1.compareTo(o2);
+                });
+            }
+
+        } catch (Exception e) {
+            System.err.println(">>> HOME CONTROLLER: Error cargando docentes: " + e.getMessage());
+            docentes = Collections.emptyList();
+            mensajeError = "No se pudo conectar con el servicio de docentes. Verifique que ms-docentes esté ejecutándose en puerto 8081.";
         }
+
+        model.addAttribute("docentes", docentes != null ? docentes : Collections.emptyList());
+        model.addAttribute("areaSeleccionada", area);
+        model.addAttribute("areas", Arrays.asList("Ingenieria", "Salud", "Administracion", "Educacion", "Derecho", "Contaduria"));
+        model.addAttribute("errorConexion", mensajeError);
+
         return "docentes";
     }
 
     @GetMapping("/docentes/nuevo")
     public String formularioDocente(Model model) {
-        model.addAttribute("docente", new Docente());
+        model.addAttribute("docente", new DocenteDTO());
+        model.addAttribute("areas", Arrays.asList("Ingenieria", "Salud", "Administracion", "Educacion", "Derecho", "Contaduria"));
         return "formulario-docente";
     }
 
     @PostMapping("/docentes/guardar")
-    public String guardarDocente(@ModelAttribute Docente docente,
-                                 @RequestParam("foto") MultipartFile foto) {
+    public String guardarDocente(@ModelAttribute DocenteDTO docente,
+                                 @RequestParam(value = "foto", required = false) MultipartFile foto,
+                                 Model model) {
+        System.out.println(">>> HOME CONTROLLER: Guardando docente: " + docente.getNombre());
+        System.out.println(">>> HOME CONTROLLER: Área: " + docente.getArea());
+        System.out.println(">>> HOME CONTROLLER: Orden: " + docente.getOrden());
+        System.out.println(">>> HOME CONTROLLER: Email: " + docente.getEmail());
+        System.out.println(">>> HOME CONTROLLER: Teléfono: " + docente.getTelefono());
+
         try {
-            String uploadDir = "uploads/";
-            java.io.File dir = new java.io.File(uploadDir);
-            if (!dir.exists()) {
-                dir.mkdirs();
+            DocenteDTO guardado = docenteClientService.guardar(docente, foto);
+            if (guardado != null && guardado.getId() != null) {
+                System.out.println(">>> HOME CONTROLLER: Docente guardado con ID: " + guardado.getId());
+                return "redirect:/docentes?exito=true";
+            } else {
+                System.err.println(">>> HOME CONTROLLER: Error - El servicio devolvió null o sin ID");
+                model.addAttribute("error", "Error al guardar: El servicio no respondió correctamente. Verifique que ms-docentes esté ejecutándose en puerto 8081.");
+                model.addAttribute("docente", docente);
+                model.addAttribute("areas", Arrays.asList("Ingenieria", "Salud", "Administracion", "Educacion", "Derecho", "Contaduria"));
+                return "formulario-docente";
             }
-
-            if (!foto.isEmpty()) {
-                String fileName = System.currentTimeMillis() + "_" + foto.getOriginalFilename();
-                java.nio.file.Path filePath = java.nio.file.Paths.get(uploadDir + fileName);
-                java.nio.file.Files.copy(foto.getInputStream(), filePath);
-                docente.setImagenUrl(fileName);
-            }
-
-            docenteService.guardar(docente);
         } catch (Exception e) {
+            System.err.println(">>> HOME CONTROLLER: Error al guardar docente: " + e.getMessage());
             e.printStackTrace();
+            model.addAttribute("error", "Error al guardar docente: " + e.getMessage());
+            model.addAttribute("docente", docente);
+            model.addAttribute("areas", Arrays.asList("Ingenieria", "Salud", "Administracion", "Educacion", "Derecho", "Contaduria"));
+            return "formulario-docente";
         }
-        return "redirect:/docentes";
     }
 
-    // ==================== PROGRAMAS Y CONTACTO ====================
-    @GetMapping("/programas")
-    public String programas() {
-        return "programas";
+    // ==================== ELIMINAR DOCENTE CON LOGIN ====================
+    @GetMapping("/docentes/eliminar/{id}")
+    public String mostrarLoginEliminarDocente(@PathVariable Long id, Model model) {
+        model.addAttribute("docenteId", id);
+        return "login-eliminar-docente";
     }
 
-    @GetMapping("/contacto")
-    public String contacto() {
-        return "contacto";
+    @PostMapping("/docentes/eliminar/{id}")
+    public String eliminarDocente(@PathVariable Long id,
+                                  @RequestParam("usuario") String usuario,
+                                  @RequestParam("password") String password,
+                                  Model model) {
+        // Validar credenciales
+        if (!"Admin".equals(usuario) || !"2026".equals(password)) {
+            model.addAttribute("docenteId", id);
+            model.addAttribute("error", "❌ Usuario o contraseña incorrectos");
+            return "login-eliminar-docente";
+        }
+
+        try {
+            System.out.println(">>> HOME CONTROLLER: Eliminando docente ID: " + id);
+            docenteClientService.eliminar(id);
+            System.out.println(">>> HOME CONTROLLER: Docente eliminado exitosamente");
+            return "redirect:/docentes?eliminado=true";
+        } catch (Exception e) {
+            System.err.println(">>> HOME CONTROLLER: Error eliminando docente: " + e.getMessage());
+            model.addAttribute("docenteId", id);
+            model.addAttribute("error", "Error al eliminar: " + e.getMessage());
+            return "login-eliminar-docente";
+        }
     }
 
     // ==================== EVENTOS ====================
     @GetMapping("/eventos")
     public String eventos(@RequestParam(required = false) String categoria, Model model) {
-        List<Evento> eventos;
+        List<EventoDTO> eventos;
+        String mensajeError = null;
 
-        if (categoria != null && !categoria.isEmpty()) {
-            eventos = eventoService.listarPorCategoria(categoria);
-            model.addAttribute("categoriaActual", categoria);
-        } else {
-            eventos = eventoService.listarProximos();
-            model.addAttribute("categoriaActual", null);
+        try {
+            if (categoria != null && !categoria.isEmpty()) {
+                eventos = eventoClientService.listarPorCategoria(categoria);
+            } else {
+                eventos = eventoClientService.listarTodos();
+            }
+        } catch (Exception e) {
+            System.err.println("Error cargando eventos: " + e.getMessage());
+            eventos = Collections.emptyList();
+            mensajeError = "No se pudo conectar con el servicio de eventos. Verifique que ms-eventos esté ejecutándose en puerto 8082.";
         }
 
-        model.addAttribute("eventos", eventos);
+        model.addAttribute("eventos", eventos != null ? eventos : Collections.emptyList());
+        model.addAttribute("categoriaActual", categoria);
+        model.addAttribute("categorias", Arrays.asList("Academico", "Cultural", "Deportivo", "Investigacion", "Extension"));
+        model.addAttribute("errorConexion", mensajeError);
+
         return "eventos";
-    }
-
-    @GetMapping("/eventos/nuevo")
-    public String formularioEvento(Model model) {
-        model.addAttribute("evento", new Evento());
-        return "formulario-evento";
-    }
-
-    @PostMapping("/eventos/guardar")
-    public String guardarEvento(@ModelAttribute Evento evento,
-                                @RequestParam("imagen") MultipartFile imagen) {
-        try {
-            String uploadDir = "uploads/";
-            java.io.File dir = new java.io.File(uploadDir);
-            if (!dir.exists()) {
-                dir.mkdirs();
-            }
-
-            if (!imagen.isEmpty()) {
-                String fileName = "evento_" + System.currentTimeMillis() + "_" + imagen.getOriginalFilename();
-                java.nio.file.Path filePath = java.nio.file.Paths.get(uploadDir + fileName);
-                java.nio.file.Files.copy(imagen.getInputStream(), filePath);
-                evento.setImagenUrl(fileName);
-            }
-
-            eventoService.guardar(evento);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return "redirect:/eventos/" + evento.getId();
-    }
-
-    @GetMapping("/eventos/editar/{id}")
-    public String editarEvento(@PathVariable Long id, Model model) {
-        Evento evento = eventoService.buscarPorId(id)
-                .orElseThrow(() -> new RuntimeException("Evento no encontrado"));
-        model.addAttribute("evento", evento);
-        model.addAttribute("editando", true);
-        return "formulario-evento";
-    }
-
-    @PostMapping("/eventos/actualizar")
-    public String actualizarEvento(@ModelAttribute Evento evento,
-                                   @RequestParam("imagen") MultipartFile imagen) {
-        try {
-            if (!imagen.isEmpty()) {
-                String uploadDir = "uploads/";
-                String fileName = "evento_" + System.currentTimeMillis() + "_" + imagen.getOriginalFilename();
-                java.nio.file.Path filePath = java.nio.file.Paths.get(uploadDir + fileName);
-                java.nio.file.Files.copy(imagen.getInputStream(), filePath);
-                evento.setImagenUrl(fileName);
-            }
-            eventoService.guardar(evento);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return "redirect:/eventos/" + evento.getId();
     }
 
     @GetMapping("/eventos/eliminar/{id}")
     public String eliminarEvento(@PathVariable Long id) {
-        List<FotoEvento> fotos = fotoEventoRepository.findByEventoId(id);
-        fotoEventoRepository.deleteAll(fotos);
-        eventoService.eliminar(id);
-        return "redirect:/eventos";
+        try {
+            eventoClientService.eliminar(id);
+            return "redirect:/eventos?eliminado=true";
+        } catch (Exception e) {
+            System.err.println("Error eliminando evento: " + e.getMessage());
+            return "redirect:/eventos?error=true";
+        }
+    }
+
+    @GetMapping("/eventos/nuevo")
+    public String formularioEvento(Model model) {
+        try {
+            List<DocenteDTO> docentes = docenteClientService.listarTodos();
+            model.addAttribute("docentes", docentes);
+        } catch (Exception e) {
+            model.addAttribute("docentes", Collections.emptyList());
+            model.addAttribute("errorDocentes", "No se pudieron cargar los docentes");
+        }
+        model.addAttribute("evento", new EventoDTO());
+        model.addAttribute("categorias", Arrays.asList("Academico", "Cultural", "Deportivo", "Investigacion", "Extension"));
+        return "formulario-evento";
+    }
+
+    @PostMapping("/eventos/guardar")
+    public String guardarEvento(@ModelAttribute EventoDTO evento,
+                                @RequestParam(value = "imagen", required = false) MultipartFile imagen,
+                                Model model) {
+        try {
+            eventoClientService.guardar(evento, imagen);
+            return "redirect:/eventos?exito=true";
+        } catch (Exception e) {
+            model.addAttribute("error", "Error al guardar evento: " + e.getMessage());
+            model.addAttribute("evento", evento);
+            model.addAttribute("categorias", Arrays.asList("Academico", "Cultural", "Deportivo", "Investigacion", "Extension"));
+            try {
+                model.addAttribute("docentes", docenteClientService.listarTodos());
+            } catch (Exception ex) {
+                model.addAttribute("docentes", Collections.emptyList());
+            }
+            return "formulario-evento";
+        }
     }
 
     @GetMapping("/eventos/{id}")
     public String detalleEvento(@PathVariable Long id, Model model) {
-        Evento evento = eventoService.buscarPorId(id)
-                .orElseThrow(() -> new RuntimeException("Evento no encontrado"));
-        List<FotoEvento> fotos = fotoEventoRepository.findByEventoId(id);
+        try {
+            EventoDTO evento = eventoClientService.buscarPorId(id);
+            if (evento == null) {
+                return "redirect:/eventos?error=notfound";
+            }
+            model.addAttribute("evento", evento);
 
-        model.addAttribute("evento", evento);
-        model.addAttribute("fotos", fotos);
-        model.addAttribute("cantidadFotos", fotos.size());
-        return "detalle-evento";
+            try {
+                List<FotoEventoDTO> fotos = eventoClientService.listarFotosPorEvento(id);
+                model.addAttribute("fotos", fotos);
+                model.addAttribute("cantidadFotos", fotos != null ? fotos.size() : 0); // <-- AGREGAR ESTA LÍNEA
+            } catch (Exception e) {
+                model.addAttribute("fotos", Collections.emptyList());
+                model.addAttribute("cantidadFotos", 0); // <-- Y ESTA
+            }
+
+            return "detalle-evento";
+        } catch (Exception e) {
+            return "redirect:/eventos?error=true";
+        }
     }
+
+    // ==================== AGREGAR FOTOS A EVENTO ====================
 
     @PostMapping("/eventos/{id}/fotos")
     public String agregarFotosEvento(@PathVariable Long id,
-                                     @RequestParam("fotos") MultipartFile[] fotos) {
+                                     @RequestParam("fotos") List<MultipartFile> fotos,
+                                     Model model) {
         try {
-            Evento evento = eventoService.buscarPorId(id)
-                    .orElseThrow(() -> new RuntimeException("Evento no encontrado"));
-
-            String uploadDir = "uploads/";
-            java.io.File dir = new java.io.File(uploadDir);
-            if (!dir.exists()) {
-                dir.mkdirs();
-            }
-
-            for (MultipartFile foto : fotos) {
-                if (!foto.isEmpty()) {
-                    String fileName = "evento_" + id + "_" + System.currentTimeMillis() + "_" + foto.getOriginalFilename();
-                    java.nio.file.Path filePath = java.nio.file.Paths.get(uploadDir + fileName);
-                    java.nio.file.Files.copy(foto.getInputStream(), filePath);
-
-                    FotoEvento fotoEvento = new FotoEvento();
-                    fotoEvento.setNombreArchivo(fileName);
-                    fotoEvento.setEvento(evento);
-                    fotoEventoRepository.save(fotoEvento);
-                }
-            }
+            System.out.println(">>> HOME CONTROLLER: Agregando " + fotos.size() + " fotos al evento " + id);
+            eventoClientService.agregarFotos(id, fotos);
+            return "redirect:/eventos/" + id + "?fotosAgregadas=true";
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println(">>> HOME CONTROLLER: Error agregando fotos: " + e.getMessage());
+            return "redirect:/eventos/" + id + "?error=true";
         }
-        return "redirect:/eventos/" + id;
     }
 
-    @GetMapping("/eventos/fotos/eliminar/{fotoId}")
-    public String eliminarFoto(@PathVariable Long fotoId) {
-        FotoEvento foto = fotoEventoRepository.findById(fotoId)
-                .orElseThrow(() -> new RuntimeException("Foto no encontrada"));
-        Long eventoId = foto.getEvento().getId();
-        fotoEventoRepository.deleteById(fotoId);
-        return "redirect:/eventos/" + eventoId;
-    }
-
-    // ==================== ADMIN NOTICIAS ====================
-    @GetMapping("/admin/noticias")
-    public String adminNoticias(Model model) {
-        model.addAttribute("noticias", noticiaRepository.findAll());
-        model.addAttribute("noticia", new Noticia());
-        return "admin-noticias";
-    }
-
-    @PostMapping("/admin/noticias/guardar")
-    public String guardarNoticia(@ModelAttribute Noticia noticia,
-                                 @RequestParam(value = "imagen", required = false) MultipartFile imagen) {
+    @GetMapping("/eventos/fotos/eliminar/{id}")
+    public String eliminarFoto(@PathVariable Long id,
+                               @RequestParam("eventoId") Long eventoId) {
         try {
-            // Solo procesar imagen si se envió
-            if (imagen != null && !imagen.isEmpty()) {
-                String uploadDir = "uploads/";
-                java.io.File dir = new java.io.File(uploadDir);
-                if (!dir.exists()) {
-                    dir.mkdirs();
-                }
-                String fileName = "noticia_" + System.currentTimeMillis() + "_" + imagen.getOriginalFilename();
-                java.nio.file.Path filePath = java.nio.file.Paths.get(uploadDir + fileName);
-                java.nio.file.Files.copy(imagen.getInputStream(), filePath);
-                noticia.setImagenUrl(fileName);
-            }
-
-            // Fecha por defecto
-            if (noticia.getFechaPublicacion() == null) {
-                noticia.setFechaPublicacion(LocalDate.now());
-            }
-
-            noticiaRepository.save(noticia);
+            System.out.println(">>> HOME CONTROLLER: Eliminando foto " + id + " del evento " + eventoId);
+            // Aquí necesitarías agregar el método en EventoClientService si quieres eliminar fotos
+            return "redirect:/eventos/" + eventoId + "?fotoEliminada=true";
         } catch (Exception e) {
-            e.printStackTrace();
+            return "redirect:/eventos/" + eventoId + "?error=true";
         }
-        return "redirect:/admin/noticias";
     }
 
-    @GetMapping("/admin/noticias/eliminar/{id}")
-    public String eliminarNoticia(@PathVariable Long id) {
-        noticiaRepository.deleteById(id);
-        return "redirect:/admin/noticias";
+    // ==================== EDITAR EVENTO ====================
+    @GetMapping("/eventos/editar/{id}")
+    public String formularioEditarEvento(@PathVariable Long id, Model model) {
+        try {
+            EventoDTO evento = eventoClientService.buscarPorId(id);
+            if (evento == null) {
+                return "redirect:/eventos?error=notfound";
+            }
+
+            try {
+                List<DocenteDTO> docentes = docenteClientService.listarTodos();
+                model.addAttribute("docentes", docentes);
+            } catch (Exception e) {
+                model.addAttribute("docentes", Collections.emptyList());
+            }
+
+            model.addAttribute("evento", evento);
+            model.addAttribute("categorias", Arrays.asList("Academico", "Cultural", "Deportivo", "Investigacion", "Extension"));
+            model.addAttribute("modoEdicion", true); // Para saber que es edición
+
+            return "formulario-evento";
+        } catch (Exception e) {
+            return "redirect:/eventos?error=true";
+        }
     }
 
-    // ==================== SEMILLERO DE INVESTIGACIÓN ====================
+    // ==================== SEMILLERO ====================
     @GetMapping("/semillero")
-    public String semillero(@RequestParam(required = false) String area,
-                            @RequestParam(required = false) String estado,
-                            Model model) {
-        List<Proyecto> proyectos;
-
-        if (area != null && !area.isEmpty() && estado != null && !estado.isEmpty()) {
-            proyectos = proyectoService.listarPorArea(area);
-            proyectos.removeIf(p -> !p.getEstado().equals(estado));
-            model.addAttribute("areaActual", area);
-            model.addAttribute("estadoActual", estado);
-        } else if (area != null && !area.isEmpty()) {
-            proyectos = proyectoService.listarPorArea(area);
-            model.addAttribute("areaActual", area);
-            model.addAttribute("estadoActual", null);
-        } else if (estado != null && !estado.isEmpty()) {
-            proyectos = proyectoService.listarPorEstado(estado);
-            model.addAttribute("areaActual", null);
-            model.addAttribute("estadoActual", estado);
-        } else {
-            proyectos = proyectoService.listarTodos();
-            model.addAttribute("areaActual", null);
-            model.addAttribute("estadoActual", null);
-        }
-
-        model.addAttribute("proyectos", proyectos);
+    public String semillero(Model model) {
         return "semillero";
     }
 
-    @GetMapping("/semillero/nuevo")
-    public String formularioProyecto(Model model) {
-        model.addAttribute("proyecto", new Proyecto());
-        return "formulario-proyecto";
+    // ==================== PROGRAMAS ====================
+    @GetMapping("/programas")
+    public String programas(Model model) {
+        return "programas";
     }
 
-    @PostMapping("/semillero/guardar")
-    public String guardarProyecto(@RequestParam String titulo,
-                                  @RequestParam(required = false) String descripcion,
-                                  @RequestParam(required = false) String area,
-                                  @RequestParam(required = false) String estado,
-                                  @RequestParam(required = false) String fechaInicio,
-                                  @RequestParam(required = false) String fechaFin,
-                                  @RequestParam(required = false) String integrantes,
-                                  @RequestParam(required = false) String objetivos,
-                                  @RequestParam(required = false) String resultados,
-                                  @RequestParam(required = false) MultipartFile imagenPrincipal,
-                                  @RequestParam(required = false) MultipartFile[] fotosIntegrantes,
-                                  Model model) {
-
-        Proyecto proyecto = new Proyecto();
-
-        try {
-            proyecto.setTitulo(titulo);
-            proyecto.setDescripcion(descripcion);
-            proyecto.setArea(area != null ? area : "Ingeniería");
-            proyecto.setEstado(estado != null ? estado : "En progreso");
-            proyecto.setIntegrantes(integrantes);
-            proyecto.setObjetivos(objetivos);
-            proyecto.setResultados(resultados);
-
-            // Fechas OPCIONALES
-            if (fechaInicio != null && !fechaInicio.isEmpty()) {
-                proyecto.setFechaInicio(LocalDate.parse(fechaInicio));
-            }
-
-            if (fechaFin != null && !fechaFin.isEmpty()) {
-                proyecto.setFechaFin(LocalDate.parse(fechaFin));
-            }
-
-            // Crear carpeta uploads si no existe
-            String uploadDir = "uploads/";
-            java.io.File dir = new java.io.File(uploadDir);
-            if (!dir.exists()) {
-                dir.mkdirs();
-            }
-
-            // Guardar imagen principal
-            if (imagenPrincipal != null && !imagenPrincipal.isEmpty()) {
-                String fileName = "proyecto_" + System.currentTimeMillis() + "_" + imagenPrincipal.getOriginalFilename();
-                java.nio.file.Path filePath = java.nio.file.Paths.get(uploadDir + fileName);
-                java.nio.file.Files.copy(imagenPrincipal.getInputStream(), filePath);
-                proyecto.setImagenPrincipal(fileName);
-            }
-
-            // Guardar fotos de integrantes
-            if (fotosIntegrantes != null && fotosIntegrantes.length > 0) {
-                StringBuilder fotosInt = new StringBuilder();
-                for (int i = 0; i < fotosIntegrantes.length; i++) {
-                    MultipartFile foto = fotosIntegrantes[i];
-                    if (foto != null && !foto.isEmpty()) {
-                        String fileName = "integrante_" + System.currentTimeMillis() + "_" + i + "_" + foto.getOriginalFilename();
-                        java.nio.file.Path filePath = java.nio.file.Paths.get(uploadDir + fileName);
-                        java.nio.file.Files.copy(foto.getInputStream(), filePath);
-                        if (fotosInt.length() > 0) fotosInt.append(",");
-                        fotosInt.append(fileName);
-                    }
-                }
-                if (fotosInt.length() > 0) {
-                    proyecto.setFotosIntegrantes(fotosInt.toString());
-                }
-            }
-
-            proyectoService.guardar(proyecto);
-            System.out.println(">>> PROYECTO GUARDADO: ID = " + proyecto.getId());
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            model.addAttribute("error", "Error al guardar: " + e.getMessage());
-            model.addAttribute("proyecto", proyecto);
-            return "formulario-proyecto";
-        }
-
-        return "redirect:/semillero/" + proyecto.getId();
-    }
-
-    @GetMapping("/semillero/{id}")
-    public String detalleProyecto(@PathVariable Long id, Model model) {
-        Proyecto proyecto = proyectoService.buscarPorId(id)
-                .orElseThrow(() -> new RuntimeException("Proyecto no encontrado"));
-        List<FotoProyecto> fotos = fotoProyectoRepository.findByProyectoId(id);
-
-        model.addAttribute("proyecto", proyecto);
-        model.addAttribute("fotos", fotos);
-        model.addAttribute("cantidadFotos", fotos.size());
-
-        String[] listaIntegrantes = (proyecto.getIntegrantes() != null && !proyecto.getIntegrantes().isEmpty()) ?
-                proyecto.getIntegrantes().split(",") : new String[0];
-        String[] listaFotosInt = (proyecto.getFotosIntegrantes() != null && !proyecto.getFotosIntegrantes().isEmpty()) ?
-                proyecto.getFotosIntegrantes().split(",") : new String[0];
-
-        model.addAttribute("listaIntegrantes", listaIntegrantes);
-        model.addAttribute("listaFotosInt", listaFotosInt);
-
-        return "detalle-proyecto";
-    }
-
-    @PostMapping("/semillero/{id}/fotos")
-    public String agregarFotosProyecto(@PathVariable Long id,
-                                       @RequestParam("fotos") MultipartFile[] fotos) {
-        try {
-            Proyecto proyecto = proyectoService.buscarPorId(id)
-                    .orElseThrow(() -> new RuntimeException("Proyecto no encontrado"));
-
-            String uploadDir = "uploads/";
-            java.io.File dir = new java.io.File(uploadDir);
-            if (!dir.exists()) {
-                dir.mkdirs();
-            }
-
-            for (MultipartFile foto : fotos) {
-                if (!foto.isEmpty()) {
-                    String fileName = "proyecto_" + id + "_" + System.currentTimeMillis() + "_" + foto.getOriginalFilename();
-                    java.nio.file.Path filePath = java.nio.file.Paths.get(uploadDir + fileName);
-                    java.nio.file.Files.copy(foto.getInputStream(), filePath);
-
-                    FotoProyecto fotoProyecto = new FotoProyecto();
-                    fotoProyecto.setNombreArchivo(fileName);
-                    fotoProyecto.setProyecto(proyecto);
-                    fotoProyectoRepository.save(fotoProyecto);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return "redirect:/semillero/" + id;
-    }
-
-    @GetMapping("/semillero/eliminar/{id}")
-    public String eliminarProyecto(@PathVariable Long id) {
-        try {
-            List<FotoProyecto> fotos = fotoProyectoRepository.findByProyectoId(id);
-            fotoProyectoRepository.deleteAll(fotos);
-            proyectoService.eliminar(id);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return "redirect:/semillero";
+    // ==================== CONTACTO ====================
+    @GetMapping("/contacto")
+    public String contacto(Model model) {
+        return "contacto";
     }
 }

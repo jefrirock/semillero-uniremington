@@ -26,7 +26,7 @@
             </div>
 
             <!-- Imagen de fondo -->
-            <img th:if="${noticia.imagenUrl}" th:src="@{'/uploads/' + ${noticia.imagenUrl}}"
+            <img th:if="${noticia.imagenUrl}" th:src="${noticia.imagenUrl}"
                  style="position: absolute; z-index: -1; width: 100%; height: 100%; object-fit: cover;" alt="">
         </div>
 
@@ -87,8 +87,8 @@
 
     <!-- Stats con animación de contador -->
     <div class="scroll-animado" style="display: flex; justify-content: space-around; flex-wrap: wrap; margin: 30px 0; background: #003366; padding: 20px; border-radius: 8px; color: white; transform: translateY(20px); opacity: 0; transition: all 0.6s ease;">
-        <div style="text-align: center; padding: 15px;" class="contador-animado" data-target="${#lists.size(docentes)}">
-            <div style="font-size: 2em; font-weight: bold; color: #ffd700;" th:text="${#lists.size(docentes)} + '+'">0+</div>
+        <div style="text-align: center; padding: 15px;" class="contador-animado">
+            <div style="font-size: 2em; font-weight: bold; color: #ffd700;">25+</div>
             <div>Docentes Activos</div>
         </div>
         <div style="text-align: center; padding: 15px;">
@@ -105,25 +105,54 @@
         </div>
     </div>
 
-    <!-- Modales (iguales que antes) -->
-    <div id="historiaModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('historiaModal')">&times;</span>
-            <h2>Nuestra Historia</h2>
-            <p>Fundada en 1915...</p>
+    <!-- Modales -->
+    <div id="historiaModal" class="modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);">
+        <div class="modal-content" style="background-color: #fefefe; margin: 10% auto; padding: 30px; border-radius: 10px; width: 80%; max-width: 600px; position: relative;">
+            <span class="close" onclick="closeModal('historiaModal')" style="color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
+            <h2 style="color: #003366; margin-bottom: 20px;">Nuestra Historia</h2>
+            <p style="line-height: 1.8; color: #555;">Fundada en 1915, Uniremington ha sido pionera en la educación superior en Colombia. A lo largo de más de 100 años, hemos formado a miles de profesionales que han contribuido al desarrollo del país. Nuestro compromiso con la excelencia académica y la innovación nos ha permitido mantenernos como una de las instituciones más reconocidas del país.</p>
+        </div>
+    </div>
+
+    <div id="misionModal" class="modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);">
+        <div class="modal-content" style="background-color: #fefefe; margin: 10% auto; padding: 30px; border-radius: 10px; width: 80%; max-width: 600px; position: relative;">
+            <span class="close" onclick="closeModal('misionModal')" style="color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
+            <h2 style="color: #003366; margin-bottom: 20px;">Misión</h2>
+            <p style="line-height: 1.8; color: #555;">Somos una institución de educación superior que forma ciudadanos competentes, éticos y comprometidos con el desarrollo sostenible de la sociedad, a través de programas académicos de calidad, investigación innovadora y extensión social.</p>
+        </div>
+    </div>
+
+    <div id="visionModal" class="modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);">
+        <div class="modal-content" style="background-color: #fefefe; margin: 10% auto; padding: 30px; border-radius: 10px; width: 80%; max-width: 600px; position: relative;">
+            <span class="close" onclick="closeModal('visionModal')" style="color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
+            <h2 style="color: #003366; margin-bottom: 20px;">Visión</h2>
+            <p style="line-height: 1.8; color: #555;">Ser reconocida como una institución de educación superior de alta calidad, líder en innovación pedagógica, investigación aplicada y proyección social, que forma profesionales íntegros y competentes para el desarrollo regional y nacional.</p>
         </div>
     </div>
 
     <script>
         // 🎠 Carrusel automático
         let slideActual = 0;
-        const slides = document.querySelectorAll('.slide-noticia');
-        const indicadores = document.querySelectorAll('.indicador');
+        let slides = [];
+        let indicadores = [];
+
+        function initCarrusel() {
+            slides = document.querySelectorAll('.slide-noticia');
+            indicadores = document.querySelectorAll('.indicador');
+
+            if (slides.length > 0) {
+                mostrarSlide(0);
+                setInterval(() => cambiarSlide(1), 5000);
+            }
+        }
 
         function mostrarSlide(index) {
+            if (slides.length === 0) return;
+
             slides.forEach((slide, i) => {
                 slide.style.opacity = i === index ? '1' : '0';
             });
+
             if (indicadores.length > 0) {
                 indicadores.forEach((ind, i) => {
                     ind.style.background = i === index ? '#ffd700' : 'rgba(255,255,255,0.5)';
@@ -144,10 +173,20 @@
             mostrarSlide(index);
         }
 
-        // Auto-play cada 5 segundos
-        if (slides.length > 0) {
-            mostrarSlide(0);
-            setInterval(() => cambiarSlide(1), 5000);
+        // Funciones para modales
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Cerrar modal al hacer clic fuera
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
         }
 
         // Animaciones al hacer scroll
@@ -165,7 +204,11 @@
             });
         }, observerOptions);
 
-        document.querySelectorAll('.scroll-animado').forEach(el => observer.observe(el));
+        // Inicializar todo cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', function() {
+            initCarrusel();
+            document.querySelectorAll('.scroll-animado').forEach(el => observer.observe(el));
+        });
     </script>
 </section>
 </html>

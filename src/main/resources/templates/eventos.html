@@ -14,47 +14,48 @@
         </a>
     </div>
 
-    <!-- Filtros -->
-    <div style="display: flex; justify-content: center; gap: 15px; margin-bottom: 30px; flex-wrap: wrap;">
-        <a th:href="@{/eventos}"
-           th:style="${categoriaActual == null} ? 'background: #003366; color: white;' : 'background: transparent; color: #003366;'"
-           style="padding: 8px 20px; border: 2px solid #003366; border-radius: 25px; text-decoration: none; font-weight: bold;">
-            Todos
-        </a>
-        <a th:href="@{/eventos(categoria='academico')}"
-           th:style="${categoriaActual == 'academico'} ? 'background: #003366; color: white;' : 'background: transparent; color: #003366;'"
-           style="padding: 8px 20px; border: 2px solid #003366; border-radius: 25px; text-decoration: none;">
-            Académicos
-        </a>
-        <a th:href="@{/eventos(categoria='cultural')}"
-           th:style="${categoriaActual == 'cultural'} ? 'background: #003366; color: white;' : 'background: transparent; color: #003366;'"
-           style="padding: 8px 20px; border: 2px solid #003366; border-radius: 25px; text-decoration: none;">
-            Culturales
-        </a>
-        <a th:href="@{/eventos(categoria='tecnologia')}"
-           th:style="${categoriaActual == 'tecnologia'} ? 'background: #003366; color: white;' : 'background: transparent; color: #003366;'"
-           style="padding: 8px 20px; border: 2px solid #003366; border-radius: 25px; text-decoration: none;">
-            Tecnología
-        </a>
+    <!-- Mensajes de éxito/error -->
+    <div th:if="${param.exito}" style="background: #d4edda; color: #155724; padding: 15px; border-radius: 5px; margin-bottom: 20px; text-align: center;">
+        ✅ <strong>¡Evento guardado exitosamente!</strong>
+    </div>
+    <div th:if="${param.eliminado}" style="background: #d4edda; color: #155724; padding: 15px; border-radius: 5px; margin-bottom: 20px; text-align: center;">
+        ✅ <strong>¡Evento eliminado exitosamente!</strong>
     </div>
 
-    <!-- EVENTOS DINÁMICOS DE LA BD -->
+    <!-- Mensaje de error de conexión -->
+    <div th:if="${errorConexion}" style="background: #f8d7da; color: #721c24; padding: 15px; border-radius: 5px; margin-bottom: 20px; text-align: center;">
+        <strong>⚠️ <span th:text="${errorConexion}"></span></strong>
+    </div>
+
+    <!-- Filtros -->
+    <div style="display: flex; justify-content: center; gap: 15px; margin-bottom: 30px; flex-wrap: wrap;">
+        <a th:href="@{/eventos}" th:style="${categoriaActual == null} ? 'background: #003366; color: white;' : 'background: transparent; color: #003366;'" style="padding: 8px 20px; border: 2px solid #003366; border-radius: 25px; text-decoration: none; font-weight: bold;">Todos</a>
+        <a th:href="@{/eventos(categoria='Academico')}" th:style="${categoriaActual == 'Academico'} ? 'background: #003366; color: white;' : 'background: transparent; color: #003366;'" style="padding: 8px 20px; border: 2px solid #003366; border-radius: 25px; text-decoration: none;">Académicos</a>
+        <a th:href="@{/eventos(categoria='Cultural')}" th:style="${categoriaActual == 'Cultural'} ? 'background: #003366; color: white;' : 'background: transparent; color: #003366;'" style="padding: 8px 20px; border: 2px solid #003366; border-radius: 25px; text-decoration: none;">Culturales</a>
+        <a th:href="@{/eventos(categoria='Deportivo')}" th:style="${categoriaActual == 'Deportivo'} ? 'background: #003366; color: white;' : 'background: transparent; color: #003366;'" style="padding: 8px 20px; border: 2px solid #003366; border-radius: 25px; text-decoration: none;">Deportivos</a>
+        <a th:href="@{/eventos(categoria='Investigacion')}" th:style="${categoriaActual == 'Investigacion'} ? 'background: #003366; color: white;' : 'background: transparent; color: #003366;'" style="padding: 8px 20px; border: 2px solid #003366; border-radius: 25px; text-decoration: none;">Investigación</a>
+        <a th:href="@{/eventos(categoria='Extension')}" th:style="${categoriaActual == 'Extension'} ? 'background: #003366; color: white;' : 'background: transparent; color: #003366;'" style="padding: 8px 20px; border: 2px solid #003366; border-radius: 25px; text-decoration: none;">Extensión</a>
+    </div>
+
+    <!-- EVENTOS DINÁMICOS -->
     <div class="eventos-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; margin-bottom: 30px; max-width: 1200px; margin-left: auto; margin-right: auto;">
 
-        <div th:each="evento : ${eventos}" style="background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); transition: transform 0.3s;"
-             onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
+        <div th:if="${#lists.isEmpty(eventos)}" style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #666;">
+            <div style="font-size: 4em; margin-bottom: 20px;">📭</div>
+            <h3 style="color: #003366; margin-bottom: 10px;">No hay eventos disponibles</h3>
+        </div>
+
+        <div th:each="evento : ${eventos}" class="evento-card" style="background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); transition: transform 0.3s;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
 
             <div style="position: relative;">
-                <img th:if="${evento.imagenUrl}" th:src="@{'/uploads/' + ${evento.imagenUrl}}"
-                     style="width: 100%; height: 200px; object-fit: cover;" alt="Evento">
-                <div th:unless="${evento.imagenUrl}"
-                     style="width: 100%; height: 200px; background: linear-gradient(135deg, #003366, #004488); display: flex; align-items: center; justify-content: center; color: white; font-size: 3em;">
+                <!-- ✅ IMAGEN CON DATA-URL PARA JAVASCRIPT -->
+                <img th:if="${evento.imagenUrl}" th:data-url="${evento.imagenUrl}" th:src="${evento.imagenUrl}"
+                     style="width: 100%; height: 200px; object-fit: cover;" alt="Evento" class="evento-imagen">
+                <div th:unless="${evento.imagenUrl}" style="width: 100%; height: 200px; background: linear-gradient(135deg, #003366, #004488); display: flex; align-items: center; justify-content: center; color: white; font-size: 3em;">
                     📅
                 </div>
 
-                <span th:text="${evento.categoria}"
-                      style="position: absolute; top: 15px; right: 15px; background: #ffd700; color: #003366; padding: 5px 15px; border-radius: 20px; font-weight: bold; font-size: 0.9em; text-transform: uppercase;">
-                </span>
+                <span th:text="${evento.categoria}" style="position: absolute; top: 15px; right: 15px; background: #ffd700; color: #003366; padding: 5px 15px; border-radius: 20px; font-weight: bold; font-size: 0.9em; text-transform: uppercase;"></span>
             </div>
 
             <div style="padding: 20px;">
@@ -68,81 +69,33 @@
 
                 <!-- BOTONES -->
                 <div style="display: flex; gap: 5px;">
-                    <a th:href="@{/eventos/{id}(id=${evento.id})}"
-                       style="flex: 2; padding: 8px; background: #003366; color: white; text-decoration: none; border-radius: 5px; text-align: center; font-weight: bold; font-size: 0.85em;">
-                        📷 Ver Galería
-                    </a>
-                    <a th:href="@{/eventos/editar/{id}(id=${evento.id})}"
-                       style="flex: 1; padding: 8px; background: #ffd700; color: #003366; text-decoration: none; border-radius: 5px; text-align: center; font-weight: bold; font-size: 0.85em;">
-                        ✏️
-                    </a>
-                    <a th:href="@{/eventos/eliminar/{id}(id=${evento.id})}"
-                       onclick="return confirm('¿Eliminar este evento y todas sus fotos?');"
-                       style="flex: 1; padding: 8px; background: #dc3545; color: white; text-decoration: none; border-radius: 5px; text-align: center; font-weight: bold; font-size: 0.85em;">
-                        🗑️
-                    </a>
+                    <a th:href="@{/eventos/{id}(id=${evento.id})}" style="flex: 2; padding: 8px; background: #003366; color: white; text-decoration: none; border-radius: 5px; text-align: center; font-weight: bold; font-size: 0.85em;">📷 Ver Galería</a>
+                    <a th:href="@{/eventos/editar/{id}(id=${evento.id})}" style="flex: 1; padding: 8px; background: #ffc107; color: #003366; text-decoration: none; border-radius: 5px; text-align: center; font-weight: bold; font-size: 0.85em;">✏️</a>
+                    <a th:href="@{/eventos/eliminar/{id}(id=${evento.id})}" onclick="return confirm('¿Eliminar este evento?');" style="flex: 1; padding: 8px; background: #dc3545; color: white; text-decoration: none; border-radius: 5px; text-align: center; font-weight: bold; font-size: 0.85em;">🗑️</a>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Línea divisoria más compacta -->
-    <hr style="border: none; border-top: 2px solid #ffd700; margin: 30px auto; width: 100px;">
-
-    <!-- EVENTOS ESTÁTICOS ORIGINALES (AHORA MÁS ARRIBA) -->
+    <!-- EVENTOS ESTÁTICOS -->
     <div style="text-align: center; margin-bottom: 20px;">
         <h3 style="color: #003366; font-size: 1.4em; margin: 0;">Eventos Destacados Anteriores</h3>
     </div>
+    <!-- ... eventos estáticos ... -->
 
-    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; margin-bottom: 40px; max-width: 1000px; margin-left: auto; margin-right: auto; opacity: 0.9;">
-
-        <!-- Evento 1: IA -->
-        <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-            <div style="position: relative; height: 180px;">
-                <img src="/images/evento-ia.jpg" alt="IA" style="width: 100%; height: 100%; object-fit: cover;">
-                <span style="position: absolute; top: 10px; right: 10px; background: #ffd700; color: #003366; padding: 4px 12px; border-radius: 15px; font-weight: bold; font-size: 0.85em;">Tecnología</span>
-            </div>
-            <div style="padding: 15px;">
-                <div style="color: #666; font-size: 0.85em; margin-bottom: 5px;">📅 10 marzo 2025</div>
-                <h4 style="color: #003366; margin: 0; font-size: 1.1em;">Conferencia IA en Educación</h4>
-            </div>
-        </div>
-
-        <!-- Evento 2: Feria -->
-        <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-            <div style="position: relative; height: 180px;">
-                <img src="/images/evento-feria.jpg" alt="Feria" style="width: 100%; height: 100%; object-fit: cover;">
-                <span style="position: absolute; top: 10px; right: 10px; background: #ffd700; color: #003366; padding: 4px 12px; border-radius: 15px; font-weight: bold; font-size: 0.85em;">Académico</span>
-            </div>
-            <div style="padding: 15px;">
-                <div style="color: #666; font-size: 0.85em; margin-bottom: 5px;">📅 25 abril 2025</div>
-                <h4 style="color: #003366; margin: 0; font-size: 1.1em;">Feria de Empleabilidad</h4>
-            </div>
-        </div>
-
-        <!-- Evento 3: Cultural -->
-        <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-            <div style="position: relative; height: 180px;">
-                <img src="/images/evento-cultural.jpg" alt="Cultural" style="width: 100%; height: 100%; object-fit: cover;">
-                <span style="position: absolute; top: 10px; right: 10px; background: #ffd700; color: #003366; padding: 4px 12px; border-radius: 15px; font-weight: bold; font-size: 0.85em;">Culturales</span>
-            </div>
-            <div style="padding: 15px;">
-                <div style="color: #666; font-size: 0.85em; margin-bottom: 5px;">📅 10 junio 2025</div>
-                <h4 style="color: #003366; margin: 0; font-size: 1.1em;">Eventos Culturales</h4>
-            </div>
-        </div>
-
-        <!-- Evento 4: Simposio -->
-        <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-            <div style="position: relative; height: 180px;">
-                <img src="/images/evento-simposio.jpg" alt="Simposio" style="width: 100%; height: 100%; object-fit: cover;">
-                <span style="position: absolute; top: 10px; right: 10px; background: #ffd700; color: #003366; padding: 4px 12px; border-radius: 15px; font-weight: bold; font-size: 0.85em;">Tecnología</span>
-            </div>
-            <div style="padding: 15px;">
-                <div style="color: #666; font-size: 0.85em; margin-bottom: 5px;">📅 15 mayo 2025</div>
-                <h4 style="color: #003366; margin: 0; font-size: 1.1em;">Simposio Innovación</h4>
-            </div>
-        </div>
-    </div>
+    <!-- ✅ JAVASCRIPT PARA ARREGLAR IMÁGENES -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Arreglar URLs de imágenes de eventos
+            const imagenes = document.querySelectorAll('.evento-imagen');
+            imagenes.forEach(function(img) {
+                const urlOriginal = img.getAttribute('data-url') || img.src;
+                if (urlOriginal && !urlOriginal.startsWith('http')) {
+                    // Agregar puerto 8082 si no tiene protocolo
+                    img.src = 'http://localhost:8082' + urlOriginal;
+                }
+            });
+        });
+    </script>
 </section>
 </html>

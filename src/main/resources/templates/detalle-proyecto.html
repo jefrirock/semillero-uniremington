@@ -76,7 +76,7 @@
 
                 <div th:unless="${#lists.isEmpty(fotos)}" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px;">
                     <div th:each="foto : ${fotos}" style="position: relative; aspect-ratio: 1; cursor: pointer; border-radius: 8px; overflow: hidden;" onclick="abrirGaleria(this)" th:data-src="@{'/uploads/' + ${foto.nombreArchivo}}">
-                        <img th:src="@{'/uploads/' + ${foto.nombreArchivo}}" style="width: 100%; height: 100%; object-fit: cover;">
+                        <img th:src="@{'http://localhost:8082/uploads/' + ${foto.nombreArchivo}}"
                     </div>
                 </div>
             </div>

@@ -25,6 +25,22 @@
         </div>
     </div>
 
+    <!-- Mensajes de éxito/error -->
+    <div th:if="${param.exito}" style="background: #d4edda; color: #155724; padding: 15px; border-radius: 5px; margin: 20px auto; max-width: 800px; text-align: center;">
+        ✅ <strong>¡Docente guardado exitosamente!</strong>
+    </div>
+    <div th:if="${param.eliminado}" style="background: #d4edda; color: #155724; padding: 15px; border-radius: 5px; margin: 20px auto; max-width: 800px; text-align: center;">
+        ✅ <strong>¡Docente eliminado exitosamente!</strong>
+    </div>
+    <div th:if="${param.error}" style="background: #f8d7da; color: #721c24; padding: 15px; border-radius: 5px; margin: 20px auto; max-width: 800px; text-align: center;">
+        ❌ <strong>Error al procesar la solicitud</strong>
+    </div>
+
+    <!-- Mensaje de error de conexión -->
+    <div th:if="${errorConexion}" style="background: #f8d7da; color: #721c24; padding: 15px; border-radius: 5px; margin: 20px auto; max-width: 800px; text-align: center;">
+        <strong>⚠️ <span th:text="${errorConexion}"></span></strong>
+    </div>
+
     <!-- Botones -->
     <div style="text-align: center; margin-bottom: 20px;">
         <a th:href="@{/docentes}" style="background: #003366; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; display: inline-block; margin: 5px; font-weight: bold;">
@@ -56,21 +72,28 @@
         </form>
     </div>
 
+    <!-- MENSAJE SI NO HAY DOCENTES -->
+    <div th:if="${#lists.isEmpty(docentes)}" style="text-align: center; padding: 40px; color: #666; background: white; border-radius: 10px; margin: 20px auto; max-width: 600px;">
+        <div style="font-size: 4em; margin-bottom: 20px;">👤</div>
+        <h3 style="color: #003366; margin-bottom: 10px;">No hay docentes registrados</h3>
+        <p>Aún no se han agregado docentes al sistema.</p>
+    </div>
+
     <!-- Grid de Docentes Compacto -->
-    <div class="docentes-grid-compacto">
+    <div class="docentes-grid-compacto" th:if="${!#lists.isEmpty(docentes)}">
         <div class="flip-card-profesor" th:each="docente : ${docentes}">
             <div class="flip-card-inner-profesor">
 
                 <!-- FRENTE -->
                 <div class="flip-card-front-profesor">
                     <div class="profesor-imagen">
-                        <img th:if="${docente.imagenUrl}" th:src="@{'/uploads/' + ${docente.imagenUrl}}" alt="Profesor">
-                        <div th:unless="${docente.imagenUrl}" class="placeholder-profesor">👤</div>
+                        <img th:if="${docente.fotoUrl}" th:src="@{'http://localhost:8081' + ${docente.fotoUrl}}" alt="Profesor">
+                        <div th:unless="${docente.fotoUrl}" class="placeholder-profesor">👤</div>
                     </div>
                     <div class="profesor-info-front">
                         <h3 th:text="${docente.nombre}">Nombre Docente</h3>
                         <p class="area-front" th:text="${docente.area}">Área</p>
-                        <div class="orden-badge" th:text="'#' + ${docente.orden}">#1</div>
+                        <div class="orden-badge" th:if="${docente.orden != null}" th:text="'#' + ${docente.orden}">#1</div>
                     </div>
                 </div>
 
@@ -84,14 +107,16 @@
                         <p><strong>📱 Teléfono:</strong> <span th:text="${docente.telefono}">tel</span></p>
                         <p><strong>⭐ Exp:</strong> <span th:text="${docente.experienciaAnios} + ' años'">exp</span></p>
                     </div>
+
+                    <!-- BOTÓN ELIMINAR - AHORA DENTRO DEL LOOP th:each -->
+                    <a th:href="@{/docentes/eliminar/{id}(id=${docente.id})}"
+                       style="display: inline-block; padding: 8px 15px; background: #dc3545; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 0.85em; margin-top: 10px;">
+                        🗑️ Eliminar
+                    </a>
                 </div>
 
             </div>
         </div>
-    </div>
-
-    <div th:if="${#lists.isEmpty(docentes)}" style="text-align: center; padding: 40px; color: #666;">
-        <p>No se encontraron docentes.</p>
     </div>
 
     <style>
@@ -99,11 +124,11 @@
         .banner-admin-compacto {
             position: relative;
             width: 100%;
-            height: 280px; /* Reducido de 450px */
+            height: 280px;
             background: linear-gradient(135deg, #001a33 0%, #003366 50%, #004488 100%);
-            border-radius: 10px; /* Reducido de 20px */
+            border-radius: 10px;
             overflow: hidden;
-            margin-bottom: 20px; /* Reducido de 40px */
+            margin-bottom: 20px;
             box-shadow: 0 10px 30px rgba(0, 51, 102, 0.4);
         }
 
@@ -174,7 +199,7 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 400px; /* Reducido de 600px */
+            width: 400px;
             height: 400px;
             background: radial-gradient(circle, rgba(255,215,0,0.2) 0%, transparent 70%);
             z-index: 2;
@@ -205,7 +230,7 @@
         }
 
         .icono-admin {
-            font-size: 3em; /* Reducido de 5em */
+            font-size: 3em;
             position: relative;
             z-index: 2;
             animation: flotarIcono 3s ease-in-out infinite;
@@ -216,7 +241,7 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 80px; /* Reducido de 120px */
+            width: 80px;
             height: 80px;
             border: 2px solid rgba(255, 215, 0, 0.5);
             border-radius: 50%;
@@ -229,7 +254,7 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 100px; /* Reducido de 140px */
+            width: 100px;
             height: 100px;
             border: 2px solid rgba(255, 215, 0, 0.3);
             border-radius: 50%;
@@ -247,7 +272,7 @@
         }
 
         .titulo-admin-compacto {
-            font-size: 2.5em; /* Reducido de 3.5em */
+            font-size: 2.5em;
             margin: 0 0 10px 0;
             font-weight: 700;
             text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
@@ -255,7 +280,7 @@
         }
 
         .subtitulo-admin-compacto {
-            font-size: 1.1em; /* Reducido de 1.3em */
+            font-size: 1.1em;
             margin: 0;
             opacity: 0.9;
             animation: aparecerTexto 0.8s ease-out 0.3s both;
@@ -267,7 +292,7 @@
         }
 
         .linea-neon-compacto {
-            width: 200px; /* Reducido de 300px */
+            width: 200px;
             height: 3px;
             background: linear-gradient(90deg, transparent, #ffd700, transparent);
             position: relative;
@@ -304,7 +329,7 @@
         .flip-card-profesor {
             background-color: transparent;
             width: 100%;
-            height: 320px; /* Reducido de 380px */
+            height: 320px;
             perspective: 1000px;
             cursor: pointer;
         }
@@ -342,7 +367,7 @@
 
         .profesor-imagen {
             width: 100%;
-            height: 220px; /* Reducido */
+            height: 220px;
             overflow: hidden;
             position: relative;
         }
@@ -481,7 +506,7 @@
         canvasAdmin.height = canvasAdmin.offsetHeight;
 
         const particulasAdmin = [];
-        const numParticulas = 40; /* Reducido de 60 */
+        const numParticulas = 40;
 
         class ParticulaAdmin {
             constructor() {

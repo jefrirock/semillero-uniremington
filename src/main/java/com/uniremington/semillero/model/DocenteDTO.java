@@ -1,28 +1,18 @@
 package com.uniremington.semillero.model;
 
-import jakarta.persistence.*;
-
-@Entity
-@Table(name = "docentes")
-public class Docente {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class DocenteDTO {
     private Long id;
-
-    @Column(nullable = false)
     private String nombre;
-
     private String area;
     private String especialidad;
     private String email;
     private String telefono;
     private Integer experienciaAnios;
-    private String imagenUrl;
+    private String fotoUrl;
+    private Integer orden; // NUEVO CAMPO
 
-    private Integer orden = 0; // NUEVO: Campo para orden personalizado
-
-    public Docente() {}
+    // Constructor vacío
+    public DocenteDTO() {}
 
     // Getters y Setters
     public Long getId() { return id; }
@@ -46,10 +36,9 @@ public class Docente {
     public Integer getExperienciaAnios() { return experienciaAnios; }
     public void setExperienciaAnios(Integer experienciaAnios) { this.experienciaAnios = experienciaAnios; }
 
-    public String getImagenUrl() { return imagenUrl; }
-    public void setImagenUrl(String imagenUrl) { this.imagenUrl = imagenUrl; }
+    public String getFotoUrl() { return fotoUrl; }
+    public void setFotoUrl(String fotoUrl) { this.fotoUrl = fotoUrl; }
 
-    // NUEVO
     public Integer getOrden() { return orden; }
     public void setOrden(Integer orden) { this.orden = orden; }
 }
